@@ -4,13 +4,12 @@
 
 #include "../headers/Environment.h"
 
-Environment::Environment(std::string path) {
-    image.loadFromFile(path);
-    texture.loadFromImage(image);
-    this->sprite.setTexture(texture);
+Environment::Environment(const std::string& path) {
+    this->image.loadFromFile(path);
+    this->texture.loadFromImage(image);
 
 }
 
-sf::Sprite Environment::getSprite() {
-    return this->sprite;
+sf::Texture& Environment::getTexture() {
+    return this->texture;
 }

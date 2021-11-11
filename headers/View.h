@@ -8,8 +8,20 @@
 
 #include "Environment.h"
 
-class View : Environment {
+class View : public Environment {
 
+private:
+    sf::Vector2f position;
+
+public:
+
+    explicit View(const std::string &path);
+
+    void setPosition(sf::Vector2f position);
+
+    sf::Vector2f getPosition();
+
+    void setPosition(float width, float height);
 };
 
 

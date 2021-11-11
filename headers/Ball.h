@@ -6,7 +6,22 @@
 #define BOUNCE_BALL_H
 
 
-class Ball {
+#include "View.h"
+
+class Ball : public View {
+
+private:
+
+    sf::Vector2f speedVector;
+
+public:
+
+    explicit Ball(const std::string& path);
+
+    sf::Vector2f getSpeedVector();
+    void setSpeedVector(sf::Vector2f newSpeedVector);
+    void setSpeedVector(float x, float y);
+
 
 };
 

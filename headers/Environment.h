@@ -13,13 +13,12 @@ class Environment {
 private:
     sf::Image image;
     sf::Texture texture;
-    sf::Sprite sprite;
 
 public:
 
-    Environment(std::string path);
+    explicit Environment(const std::string& path);
 
-    sf::Sprite getSprite();
+    sf::Texture& getTexture();
 
 };
 
