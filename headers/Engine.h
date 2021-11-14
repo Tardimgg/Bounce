@@ -13,14 +13,15 @@ class Engine {
 private:
 
     sf::RenderWindow window;
-    World world;
-    sf::Vector2u resolution;
-    sf::Vector2i position;
+    World* world;
+    sf::Vector2f positionCamera{0, 0};
+    bool mainObjectInNormalXPosition = false;
+    bool mainObjectInNormalYPosition = false;
 
     sf::View* viewWindow;
 
     void input();
-    void update(int elapsed);
+    void update(long long elapsedTime);
     void draw();
 
 public:

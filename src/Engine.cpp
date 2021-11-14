@@ -5,15 +5,25 @@
 #include "../headers/Engine.h"
 
 
-
 Engine::Engine() {
-    this->resolution.x = sf::VideoMode::getDesktopMode().width >> 1;
-    this->resolution.y = sf::VideoMode::getDesktopMode().height >> 1;
+    sf::Vector2u resolution;
+    resolution.x = (sf::VideoMode::getDesktopMode().width >> 2) * 3;
+    resolution.y = (sf::VideoMode::getDesktopMode().height >> 2) * 3;
 
-    this->window.create(sf::VideoMode(this->resolution.x, this->resolution.y), "Bounce", sf::Style::Resize);
+    this->window.create(sf::VideoMode(resolution.x, resolution.y), "Bounce",
+                        sf::Style::Resize | sf::Style::Close);
 
-    this->viewWindow = new sf::View(sf::FloatRect(0.f, 0.f, (float) this->resolution.x, (float) this->resolution.y));
+    this->viewWindow = new sf::View(sf::FloatRect(0.f, 0.f,
+                                                  static_cast<float>(resolution.x),
+                                                  static_cast<float>(resolution.y)));
     this->window.setView(*this->viewWindow);
+
+    Level level("../data/levels/level1.tmx");
+    this->world = new World(level, resolution.x, resolution.y);
+
+    sf::Vector2f startMainObjectPosition = this->world->getMainObjectPosition();
+    this->positionCamera.x = startMainObjectPosition.x;
+    this->positionCamera.y = startMainObjectPosition.y;
 }
 
 void Engine::start() {
@@ -22,10 +32,28 @@ void Engine::start() {
 
     while (window.isOpen()) {
 
-        sf::Time elapsed = clock.restart();
+        sf::Event event{};
+        while (window.pollEvent(event))
+        {
+            if (event.type == sf::Event::Closed) {
+                window.close();
+            }
+            if (event.type == sf::Event::Resized) {
+                // resize my view
+                viewWindow->setSize({
+                    static_cast<float>(event.size.width),
+                    static_cast<float>(event.size.height)
+                });
+                window.setView(*viewWindow);
+                // and align shape
+
+            }
+        }
+
+        sf::Time elapsedTime = clock.restart();
 
         input();
-        update(elapsed.asMilliseconds());
+        update(elapsedTime.asMicroseconds());
         draw();
 
     }
@@ -33,33 +61,56 @@ void Engine::start() {
 
 void Engine::input() {
     if ((sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || (sf::Keyboard::isKeyPressed(sf::Keyboard::A)))) {
-        this->world.input(sf::Keyboard::Left);
-        //--this->position.x;
-        //this->viewWindow->move(-1, 0);
-        //this->window.setPosition(this->position);
+        this->world->input(sf::Keyboard::Left);
     }
     if ((sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || (sf::Keyboard::isKeyPressed(sf::Keyboard::D)))) {
-        this->world.input(sf::Keyboard::Right);
-        //++this->position.x;
-        //this->viewWindow->move(+1, 0);
-        //this->window.setPosition(this->position);
+        this->world->input(sf::Keyboard::Right);
     }
     if ((sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || (sf::Keyboard::isKeyPressed(sf::Keyboard::W)))) {
-        this->world.input(sf::Keyboard::Up);
-        //--this->position.y;
-        //this->viewWindow->move(0, -1);
-        //this->window.setPosition(this->position);
+        this->world->input(sf::Keyboard::Up);
     }
     if ((sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || (sf::Keyboard::isKeyPressed(sf::Keyboard::S)))) {
-        this->world.input(sf::Keyboard::Down);
-        //++this->position.y;
-        //this->viewWindow->move(0, 1);
-        //this->window.setPosition(this->position);
+        this->world->input(sf::Keyboard::Down);
     }
 }
 
-void Engine::update(int elapsed) {
-    this->viewWindow->move(this->world.update(elapsed));
+void Engine::update(long long elapsedTime) {
+    float oXCoef = (float) 2 / 7;
+    float oYCoef = (float) 1 / 7;
+
+    if (this->positionCamera.x >= ((float) this->window.getSize().x * oXCoef) && this->positionCamera.x <= ((float) this->window.getSize().x * (1 - oXCoef))) {
+        this->mainObjectInNormalXPosition = true;
+    }
+    if (this->positionCamera.y >= ((float) this->window.getSize().y * oYCoef) && this->positionCamera.y <= ((float) this->window.getSize().y * (1 - oYCoef))) {
+        this->mainObjectInNormalYPosition = true;
+    }
+
+    sf::Vector2f delta = this->world->update(elapsedTime);
+
+    float moveX = 0;
+    float moveY = 0;
+
+    if (!this->mainObjectInNormalXPosition) {
+        this->positionCamera.x += delta.x;
+    } else {
+        if (delta.x + this->positionCamera.x <= ((float) this->window.getSize().x * oXCoef) || delta.x + this->positionCamera.x >= ((float) this->window.getSize().x * (1 - oXCoef))) {
+            moveX = delta.x;
+        } else {
+            this->positionCamera.x += delta.x;
+        }
+    }
+
+    if (!this->mainObjectInNormalYPosition) {
+        this->positionCamera.y += delta.y;
+    } else {
+        if (delta.y + this->positionCamera.y <= ((float) this->window.getSize().y * oYCoef) || delta.y + this->positionCamera.y >= ((float) this->window.getSize().y * (1 - oYCoef))) {
+            moveY = delta.y;
+        } else {
+            this->positionCamera.y += delta.y;
+        }
+    }
+
+    this->viewWindow->move(moveX, moveY);
 }
 
 void Engine::draw() {
@@ -70,7 +121,8 @@ void Engine::draw() {
     //sf::RenderTexture worldTexture;
     //worldTexture.create(this->resolution.x, this->resolution.y);
     //worldTexture.clear(sf::Color::Blue);
-    this->world.drawTexture(this->window, this->resolution.x, this->resolution.y);
+    //this->world.drawTexture(this->window, this->resolution.x, this->resolution.y);
+    this->world->drawTexture(this->window);
 
     //sf::Sprite sprite(worldTexture.getTexture());
     //this->window.draw(sprite);
