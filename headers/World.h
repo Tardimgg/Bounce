@@ -10,18 +10,25 @@
 #include "Environment.h"
 #include "Ball.h"
 #include "Level.h"
+#include "../include/box2d/box2d.h"
 
 class World {
 
 private:
     sf::Sprite worldSprite;
     sf::Sprite ballSprite;
-    Environment block = Environment("../data/cell.png");
-    Ball ball = Ball("../data/ball.png");
+    Environment block;
+    Ball ball;
     sf::Vector2f powerVectorOnBall = sf::Vector2f(0, 0);
     Level level;
+
     unsigned int widthWindow;
     unsigned int heightWindow;
+
+
+    b2World physicalWorld = b2World(b2Vec2(0.0f, 15.8f));
+    b2Body* ballBody;
+    b2CircleShape dynamicBallShape;
 
 public:
     World(Level level, unsigned int width, unsigned int height);

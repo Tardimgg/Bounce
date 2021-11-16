@@ -11,7 +11,7 @@
 #include <unordered_map>
 
 enum LevelItem{
-    BRICK, TORCH, NULL_VALUE
+    BRICK, TORCH, NULL_VALUE, BALL
 };
 
 class Level {

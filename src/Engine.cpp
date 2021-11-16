@@ -75,8 +75,8 @@ void Engine::input() {
 }
 
 void Engine::update(long long elapsedTime) {
-    float oXCoef = (float) 2 / 7;
-    float oYCoef = (float) 1 / 7;
+    float oXCoef = (float) 5 / 14;
+    float oYCoef = (float) 124 / 704;
 
     if (this->positionCamera.x >= ((float) this->window.getSize().x * oXCoef) && this->positionCamera.x <= ((float) this->window.getSize().x * (1 - oXCoef))) {
         this->mainObjectInNormalXPosition = true;

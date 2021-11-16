@@ -20,6 +20,7 @@ Level::Level(const std::string& path) {
     tinyxml2::XMLElement* tileSetElement = mapInfo->FirstChildElement("tileset");
     std::string brickPath = tileSetElement->Attribute("source");
     this->pathToImage.insert(std::pair<LevelItem, std::string>(BRICK, brickPath));
+    this->pathToImage.insert(std::pair<LevelItem, std::string>(BALL, "../data/ball.png"));
 
     tinyxml2::XMLElement* layerElement = mapInfo->FirstChildElement("layer");
     this->idItems.insert(std::pair<int, LevelItem>(1, BRICK));
