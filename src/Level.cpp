@@ -20,17 +20,17 @@ Level::Level(const std::string& path) {
     tinyxml2::XMLElement* tileSetElement = mapInfo->FirstChildElement("tileset");
     std::string brickPath = tileSetElement->Attribute("source");
     this->pathToImage.insert(std::pair<LevelItem, std::string>(BRICK, brickPath));
-    this->pathToImage.insert(std::pair<LevelItem, std::string>(BALL, "../data/ball.png"));
+    this->pathToImage.insert(std::pair<LevelItem, std::string>(BALL, "../data/newBall.png"));
+    this->pathToImage.insert(std::pair<LevelItem, std::string>(SPIKE, "../data/newBall.png"));
 
     tinyxml2::XMLElement* layerElement = mapInfo->FirstChildElement("layer");
-    this->idItems.insert(std::pair<int, LevelItem>(1, BRICK));
 
     tinyxml2::XMLElement* data = layerElement->FirstChildElement("data");
     std::string map = data->GetText();
 
-    this->levelMap = (int **) malloc(this->height * sizeof(int *));
+    this->levelMap = (LevelItem **) malloc(this->height * sizeof(LevelItem *));
     for (int i = 0; i < this->height; ++i) {
-        this->levelMap[i] = (int *) malloc(this->width * sizeof(int));
+        this->levelMap[i] = (LevelItem *) malloc(this->width * sizeof(LevelItem));
     }
 
     int x = 0;
@@ -42,28 +42,27 @@ Level::Level(const std::string& path) {
                 x ^= x;
             }
         } else if (value != ','){
-            this->levelMap[y][x++] = value - '0';
+            this->levelMap[y][x++] = Level::idItems[value];
         }
     }
 }
+
+std::unordered_map<char, LevelItem> Level::idItems = {
+        {'0', AIR},
+        {'1', BRICK},
+        {'2', SPIKE}
+};
 
 int Level::getWidth() {
     return this->width;
 }
 
-int Level::getHeigth() {
+int Level::getHeight() {
     return this->height;
 }
 
-int** Level::getData() {
-    return levelMap;
-}
-
-LevelItem Level::getLevelItemById(int id) {
-    if (this->idItems.find(id) == this->idItems.end()) {
-        return NULL_VALUE;
-    }
-    return this->idItems[id];
+LevelItem** Level::getData() {
+    return this->levelMap;
 }
 
 std::string Level::getImagePathByItemType(LevelItem item) {

@@ -5,7 +5,7 @@
 #include "../headers/Ball.h"
 
 Ball::Ball(const std::string &path) : View(path) {
-
+    this->getTexture().setSmooth(true);
 }
 
 sf::Vector2f Ball::getSpeedVector() {

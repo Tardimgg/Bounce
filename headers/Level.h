@@ -11,7 +11,14 @@
 #include <unordered_map>
 
 enum LevelItem{
-    BRICK, TORCH, NULL_VALUE, BALL
+    BRICK      = 1 << 0,
+    HALF_BRICK = 1 << 1,
+    SPIKE      = 1 << 2,
+    FLY_ENEMY  = 1 << 3,
+    AIR        = 1 << 4,
+    WATER      = 1 << 5,
+    BALL       = 1 << 6,
+    BIG_BALL   = 1 << 7
 };
 
 class Level {
@@ -20,19 +27,18 @@ class Level {
 private:
     int width;
     int height;
-    int** levelMap;
-    std::unordered_map<int, LevelItem> idItems;
+    LevelItem** levelMap;
+    static std::unordered_map<char, LevelItem> idItems;
     std::unordered_map<LevelItem, std::string> pathToImage;
 
 public:
     Level(const std::string& path);
 
     int getWidth();
-    int getHeigth();
+    int getHeight();
 
-    int** getData();
+    LevelItem** getData();
 
-    LevelItem getLevelItemById(int id);
     std::string getImagePathByItemType(LevelItem item);
 
 };
