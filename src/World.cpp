@@ -2,8 +2,8 @@
 // Created by oop on 03.11.2021.
 //
 
-#include <iostream>
 #include "../headers/World.h"
+
 
 World::World(Level level, unsigned int width, unsigned int height) : level(level), widthWindow(width),
                                                                      heightWindow(height),
@@ -11,25 +11,27 @@ World::World(Level level, unsigned int width, unsigned int height) : level(level
                                                                      //block(level.getImagePathByItemType(BRICK)),
                                                                      //half_block(level.getImagePathByItemType(HALF_BRICK)),
                                                                      //spike(level.getImagePathByItemType(SPIKE)),
+                                                                     numberLives(level.getNumberLives()),
                                                                      mapItems({
                                                                          {BRICK, Surface(level.getImagePathByItemType(BRICK))},
                                                                          {HALF_BRICK, Surface(level.getImagePathByItemType(HALF_BRICK))},
                                                                          {SPIKE, Surface(level.getImagePathByItemType(SPIKE))},
+                                                                         {RING, Surface(level.getImagePathByItemType(RING))}
 
+                                                                     }),
+                                                                     mapSprites({
+                                                                         {BRICK, sf::Sprite()},
+                                                                         {HALF_BRICK, sf::Sprite()},
+                                                                         {SPIKE, sf::Sprite()},
+                                                                         {RING, sf::Sprite()}
                                                                      }){
 
-    this->mapItems = {
-            {BRICK, Surface(level.getImagePathByItemType(BRICK))},
-            {HALF_BRICK, Surface(level.getImagePathByItemType(HALF_BRICK))},
-            {SPIKE, Surface(level.getImagePathByItemType(SPIKE))},
 
-            };
+    createSurfaces();
+    createSprites();
 
-    createSurface();
-
-    this->worldSprite.setTexture(this->mapItems.find(BRICK)->second.getTexture());
-    this->ballSprite.setTexture(this->ball.getTexture());
-
+    this->contactListener = new ActorListener(ENEMY, [this] { touchingEnemy(); });
+    this->physicalWorld.SetContactListener(this->contactListener);
 
     int heightLevel = level.getHeight();
     int widthLevel = level.getWidth();
@@ -37,29 +39,56 @@ World::World(Level level, unsigned int width, unsigned int height) : level(level
         for (int j = 0; j < widthLevel; ++j) {
             LevelItem item = this->level.getData()[i][j];
             if (item & (BRICK | HALF_BRICK | SPIKE)) {
-                b2BodyDef groundBodyDef;
-                groundBodyDef.position.Set(this->sizeOfBlockInMeters * (float) j + this->sizeOfBlockInMeters / 2,
-                                           this->sizeOfBlockInMeters * (float) i + this->sizeOfBlockInMeters / 2);
-                b2Body *groundBody = this->physicalWorld.CreateBody(&groundBodyDef);
 
-                b2PolygonShape groundBox;
-                //groundBox.SetAsBox(this->sizeOfBlockInMeters / 2, this->sizeOfBlockInMeters / 2);
-                std::vector<b2Vec2> points = this->mapItems.find(item)->second.getPoints();
-                groundBox.Set(&points[0], (int32) points.size());
+                b2Fixture* mainFixtureOfSurface;
 
-                groundBody->CreateFixture(&groundBox, 0.0f);
+                if ((i == 0 || !(this->level.getData()[i - 1][j] & (BRICK | HALF_BRICK))) && this->level.getData()[i][j] & (BRICK | HALF_BRICK)) {
+
+                    std::pair<b2Fixture*, b2Fixture*> allSurfaceFixture = this->mapItems.find(item)->second.buildOnEngineWithTop(this->physicalWorld,
+                                                                                             this->sizeOfBlockInMeters * (float) j + this->sizeOfBlockInMeters / 2,
+                                                                                             this->sizeOfBlockInMeters * (float) i + this->sizeOfBlockInMeters / 2);
+                    mainFixtureOfSurface = allSurfaceFixture.first;
+                    b2Fixture* topSurface = allSurfaceFixture.second;
+
+                    topSurface->SetRestitution(0.2f);
+                    topSurface->SetFriction(100.0f);
+                    topSurface->GetUserData().pointer = NO_ENEMY;
+                } else {
+                    mainFixtureOfSurface = this->mapItems.find(item)->second.buildOnEngine(this->physicalWorld,
+                                                                                           this->sizeOfBlockInMeters * (float) j + this->sizeOfBlockInMeters / 2,
+                                                                                           this->sizeOfBlockInMeters * (float) i + this->sizeOfBlockInMeters / 2);
+                }
+
+                if (item & (SPIKE)) {
+                    mainFixtureOfSurface->GetUserData().pointer = ENEMY;
+                } else {
+                    mainFixtureOfSurface->GetUserData().pointer = NO_ENEMY;
+                }
+                mainFixtureOfSurface->SetFriction(0);
+                mainFixtureOfSurface->SetRestitution(1.0f);
+
             }
         }
     }
 
+    this->coefForDisplay = (float) this->heightWindow / ((float) this->visibleHeightByBlock / (1 / this->sizeOfBlockInMeters));
+    createBall();
 
-    this->coef = (float) height / ((float) this->visibleHeightByBlock / (1 / this->sizeOfBlockInMeters));
 
+}
+
+void World::touchingEnemy() {
+    this->flagBallForDelete = true;
+}
+
+void World::createBall() {
 
     b2BodyDef bodyDef;
     bodyDef.type = b2_dynamicBody;
-    bodyDef.position.Set(3.0f, 1.5);
-    bodyDef.linearDamping = 5.0f;
+    b2Vec2 startPosition = this->level.getStartPosition();
+    bodyDef.position.Set(startPosition.x * this->sizeOfBlockInMeters - this->sizeOfBlockInMeters / 2,
+                         startPosition.y * this->sizeOfBlockInMeters - this->sizeOfBlockInMeters / 2);
+    bodyDef.angularDamping = 0.7f;
     this->ballBody = this->physicalWorld.CreateBody(&bodyDef);
 
     this->dynamicBallShape.m_radius = this->sizeOfBlockInMeters / 2;
@@ -67,35 +96,64 @@ World::World(Level level, unsigned int width, unsigned int height) : level(level
     b2FixtureDef fixtureDef;
     fixtureDef.shape = &dynamicBallShape;
     fixtureDef.density = 1300.0f;
-    fixtureDef.friction = 0.3f;
-    fixtureDef.restitution = 0.6f;
+    //fixtureDef.friction = 100.0f;
+    //fixtureDef.restitution = 0.6f;
 
-    this->ballBody->CreateFixture(&fixtureDef);
+    b2Fixture* fixture = this->ballBody->CreateFixture(&fixtureDef);
+    fixture->GetUserData().pointer = NO_ENEMY;
 }
 
-void World::createSurface() {
+void World::createSurfaces() {
     float halfBlockSize = this->sizeOfBlockInMeters / 2;
-    float thirdOfBlockSize = this->sizeOfBlockInMeters / 3;
+    float sizeSpike = halfBlockSize * (126.0f / 272);
 
     Surface block = this->mapItems.find(BRICK)->second;
-    block.addPoint(-halfBlockSize, -halfBlockSize);
-    block.addPoint(halfBlockSize, -halfBlockSize);
+    block.addPoint(-halfBlockSize, -halfBlockSize + 0.1f);
+    block.addPoint(halfBlockSize, -halfBlockSize + 0.1f);
     block.addPoint(halfBlockSize, halfBlockSize);
     block.addPoint(-halfBlockSize, halfBlockSize);
+    block.addTopPoint(-halfBlockSize, -halfBlockSize);
+    block.addTopPoint(halfBlockSize, -halfBlockSize);
 
     Surface half_block = this->mapItems.find(HALF_BRICK)->second;
-    half_block.addPoint(-halfBlockSize, -halfBlockSize);
-    half_block.addPoint(halfBlockSize, halfBlockSize);
+    half_block.addPoint(-halfBlockSize, -halfBlockSize + 0.1f);
+    half_block.addPoint(halfBlockSize, halfBlockSize + 0.1f);
     half_block.addPoint(-halfBlockSize, halfBlockSize);
-
+    half_block.addTopPoint(-halfBlockSize, -halfBlockSize);
+    half_block.addTopPoint(halfBlockSize, halfBlockSize);
 
     Surface spike = this->mapItems.find(SPIKE)->second;
-    spike.addPoint(-thirdOfBlockSize, -halfBlockSize);
-    spike.addPoint(thirdOfBlockSize, -halfBlockSize);
-    spike.addPoint(thirdOfBlockSize, halfBlockSize);
-    spike.addPoint(-thirdOfBlockSize, halfBlockSize);
-
+    spike.addPoint(-sizeSpike, -halfBlockSize);
+    spike.addPoint(sizeSpike, -halfBlockSize);
+    spike.addPoint(sizeSpike, halfBlockSize);
+    spike.addPoint(-sizeSpike, halfBlockSize);
 }
+
+
+void World::createSprites() {
+
+    for (std::pair<LevelItem const, sf::Sprite>& spritePair : this->mapSprites) {
+        Surface* surface = &this->mapItems.find(spritePair.first)->second;
+        sf::Vector2u size = surface->getTexture().getSize();
+
+        sf::Vector2f scaleCoef((float) this->heightWindow / ((float) this->visibleHeightByBlock * (float) size.x),
+                               (float) this->heightWindow / ((float) this->visibleHeightByBlock / (spritePair.first == RING ? 2.0f : 1.0f) * (float) size.y));
+
+        spritePair.second.setTexture(surface->getTexture());
+        spritePair.second.setScale(scaleCoef);
+        spritePair.second.setTextureRect(sf::IntRect(0, 0, (int) size.x, (int) size.y));
+    }
+
+    sf::Vector2u ballSize = this->ball.getTexture().getSize();
+
+    this->ballSprite.setTexture(this->ball.getTexture());
+    this->ballSprite.setOrigin((float) ballSize.x / 2, (float) ballSize.y / 2);
+    this->ballSprite.setScale((float) this->heightWindow / ((float) this->visibleHeightByBlock * (float) ballSize.x),
+                              (float) this->heightWindow / ((float) this->visibleHeightByBlock * (float) ballSize.y));
+    this->ballSprite.setTextureRect(sf::IntRect(0, 0, (int) ballSize.x, (int) ballSize.y));
+}
+
+
 
 
 
@@ -107,21 +165,29 @@ sf::Vector2f World::getMainObjectPosition() {
 
 
 void World::input(sf::Keyboard::Key addPowerVector) {
+    this->ballBody->SetAwake(true);
+    b2Vec2 currentSpeed = this->ballBody->GetLinearVelocity();
+
     switch (addPowerVector) {
         case sf::Keyboard::Left :
-            this->ballBody->SetAwake(true);
-            this->ballBody->ApplyForceToCenter(b2Vec2(-std::pow(this->sizeOfBlockInMeters, 3.0f) * 60000, 0),
-                                               false);
+            if (currentSpeed.x <= -this->maxSpeedOX) {
+                this->ballBody->SetLinearVelocity({-this->maxSpeedOX, currentSpeed.y});
+            } else {
+                this->ballBody->ApplyForceToCenter(b2Vec2(-std::pow(this->sizeOfBlockInMeters / 2, 3.0f) * 300000, 0),
+                                                   false);
+            }
             break;
         case sf::Keyboard::Right :
-            this->ballBody->SetAwake(true);
-            this->ballBody->ApplyForceToCenter(b2Vec2(std::pow(this->sizeOfBlockInMeters, 3.0f) * 60000, 0),
-                                               false);
+            if (currentSpeed.x >= this->maxSpeedOX) {
+                this->ballBody->SetLinearVelocity({this->maxSpeedOX, currentSpeed.y});
+            } else {
+                this->ballBody->ApplyForceToCenter(b2Vec2(std::pow(this->sizeOfBlockInMeters / 2, 3.0f) * 300000, 0),
+                                                   false);
+            }
             //this->ballBody->ApplyLinearImpulseToCenter(b2Vec2(400.0f, 0), false);
 
             break;
         case sf::Keyboard::Up : {
-            this->ballBody->SetAwake(true);
 
             b2ContactEdge *edge = this->ballBody->GetContactList();
 
@@ -130,10 +196,10 @@ void World::input(sf::Keyboard::Key addPowerVector) {
                     b2Vec2 normal = edge->contact->GetManifold()->localNormal;
                     if (normal.y <= -0.5) {
                         this->ballBody->SetLinearVelocity({
-                            this->ballBody->GetLinearVelocity().x,
-                            -std::sqrt(2 * 2.2f * this->gravityOnY * this->jumpSizeByBlock * this->sizeOfBlockInMeters)
+                            currentSpeed.x,
+                            -std::sqrt(2 * this->gravityOnY * this->jumpSizeByBlock * this->sizeOfBlockInMeters)
                         });
-                        //this->ballBody->ApplyLinearImpulseToCenter(b2Vec2(0, -1550.0f), false);
+                        //this->ballBody->ApplyLinearImpulseToCenter(b2Vec2(0, -60000.0f), false);
                         break;
                     }
                 }
@@ -141,31 +207,42 @@ void World::input(sf::Keyboard::Key addPowerVector) {
             break;
         }
         case sf::Keyboard::Down :
-            this->ballBody->SetAwake(true);
             this->ballBody->SetLinearVelocity({this->ballBody->GetLinearVelocity().x,
-                                               25.0f * this->sizeOfBlockInMeters});
+                                               15.0f * this->sizeOfBlockInMeters});
             //this->ballBody->ApplyLinearImpulseToCenter(b2Vec2(0, 100.0f), false);
             break;
 
     }
 }
 
-// add vt + at^2 / 2
 sf::Vector2f World::update(long long elapsedTime) {
+
+    b2Vec2 currentSpeed = this->ballBody->GetLinearVelocity();
+    this->ballBody->SetLinearVelocity({currentSpeed.x * std::pow(this->OXDamping, (float) elapsedTime / 2000.0f), currentSpeed.y});
 
     int32 velocityIterations = 8;
     int32 positionIterations = 3;
 
     this->physicalWorld.Step((float) elapsedTime / (float) std::pow(10, 6), velocityIterations, positionIterations);
+
+    if (this->flagBallForDelete && !this->physicalWorld.IsLocked()) {
+        --this->numberLives;
+        if (numberLives == 0) {
+            exit(0);
+        }
+        this->physicalWorld.DestroyBody(this->ballBody);
+        this->flagBallForDelete = false;
+        this->createBall();
+    }
+    //this->physicalWorld.ClearForces();
     //this->physicalWorld.Step(1.0f / 1200, velocityIterations, positionIterations);
 
-    b2ContactEdge *edge = this->ballBody->GetContactList();
 
-    float deltaX = this->ballBody->GetPosition().x * this->coef - this->ball.getPosition().x;
-    float deltaY = this->ballBody->GetPosition().y * this->coef - this->ball.getPosition().y;
+    float deltaX = this->ballBody->GetPosition().x * this->coefForDisplay - this->ball.getPosition().x;
+    float deltaY = this->ballBody->GetPosition().y * this->coefForDisplay - this->ball.getPosition().y;
 
-    this->ball.setPosition(this->ballBody->GetPosition().x * this->coef,
-                           this->ballBody->GetPosition().y * this->coef);
+    this->ball.setPosition(this->ballBody->GetPosition().x * this->coefForDisplay,
+                           this->ballBody->GetPosition().y * this->coefForDisplay);
 
     return {deltaX, deltaY};
 }
@@ -175,35 +252,34 @@ void World::drawTexture(sf::RenderWindow &worldWindows) {
 
     //printf("x = %f y = %f\n", this->ballBody->GetPosition().x, this->ballBody->GetPosition().y);
 
-    sf::Vector2u blockSize = this->mapItems.find(BRICK)->second.getTexture().getSize();
 
-    this->worldSprite.setScale((float) this->heightWindow / ((float) this->visibleHeightByBlock * (float) blockSize.x),
-                               (float) this->heightWindow / ((float) this->visibleHeightByBlock * (float) blockSize.y));
 
     int heightLevel = this->level.getHeight();
     int widthLevel = this->level.getWidth();
     for (int yPosition = -this->addedEdges; yPosition < heightLevel + this->addedEdges; ++yPosition) {
         for (int xPosition = -this->addedEdges; xPosition < widthLevel + this->addedEdges; ++xPosition) {
-            if (yPosition < 0 || xPosition < 0 || yPosition >= heightLevel || xPosition >= widthLevel ||
-                this->level.getData()[yPosition][xPosition] & (BRICK | HALF_BRICK | SPIKE)) {
+            LevelItem item;
+            if (yPosition < 0 || xPosition < 0 || yPosition >= heightLevel || xPosition >= widthLevel) {
+                item = BRICK;
+            } else {
+                item = this->level.getData()[yPosition][xPosition];
+            }
+            if (!(item & (BALL | AIR))) {
 
-                this->worldSprite.setPosition(
+                sf::Sprite* sprite = &this->mapSprites.find(item)->second;
+
+                sprite->setPosition(
                         (float) xPosition * ((float) this->heightWindow / (float) this->visibleHeightByBlock),
                         (float) yPosition * ((float) this->heightWindow / (float) this->visibleHeightByBlock));
 
-                this->worldSprite.setTextureRect(sf::IntRect(0, 0, (int) blockSize.x, (int) blockSize.y));
-                worldWindows.draw(this->worldSprite);
+                worldWindows.draw(*sprite);
             }
         }
     }
 
-    sf::Vector2u ballSize = this->ball.getTexture().getSize();
-    this->ballSprite.setOrigin((float) ballSize.x / 2, (float) ballSize.y / 2);
-    this->ballSprite.setScale((float) this->heightWindow / ((float) this->visibleHeightByBlock * (float) ballSize.x),
-                              (float) this->heightWindow / ((float) this->visibleHeightByBlock * (float) ballSize.y));
-    this->ballSprite.setPosition(this->ball.getPosition());
-    this->ballSprite.setTextureRect(sf::IntRect(0, 0, (int) blockSize.x, (int) blockSize.y));
-    worldWindows.draw(this->ballSprite);
-    this->ballSprite.setRotation((float) (this->ballBody->GetAngle() * 180.0 / M_PI));
 
+    this->ballSprite.setPosition(this->ball.getPosition());
+    this->ballSprite.setRotation((float) (this->ballBody->GetAngle() * 180.0 / M_PI));
+    worldWindows.draw(this->ballSprite);
 }
+

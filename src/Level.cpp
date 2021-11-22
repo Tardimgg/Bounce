@@ -21,7 +21,8 @@ Level::Level(const std::string& path) {
     std::string brickPath = tileSetElement->Attribute("source");
     this->pathToImage.insert(std::pair<LevelItem, std::string>(BRICK, brickPath));
     this->pathToImage.insert(std::pair<LevelItem, std::string>(BALL, "../data/newBall.png"));
-    this->pathToImage.insert(std::pair<LevelItem, std::string>(SPIKE, "../data/newBall.png"));
+    this->pathToImage.insert(std::pair<LevelItem, std::string>(SPIKE, "../data/spikeWithBelly.png"));
+    this->pathToImage.insert(std::pair<LevelItem, std::string>(RING, "../data/ring.png"));
 
     tinyxml2::XMLElement* layerElement = mapInfo->FirstChildElement("layer");
 
@@ -50,7 +51,8 @@ Level::Level(const std::string& path) {
 std::unordered_map<char, LevelItem> Level::idItems = {
         {'0', AIR},
         {'1', BRICK},
-        {'2', SPIKE}
+        {'2', SPIKE},
+        {'3', RING}
 };
 
 int Level::getWidth() {
@@ -70,6 +72,14 @@ std::string Level::getImagePathByItemType(LevelItem item) {
         return "";
     }
     return this->pathToImage[item];
+}
+
+b2Vec2 Level::getStartPosition() {
+    return {2, 2};
+}
+
+int Level::getNumberLives() {
+    return 3;
 }
 
 

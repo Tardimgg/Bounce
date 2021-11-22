@@ -12,17 +12,24 @@
 #include "Level.h"
 #include "../include/box2d/box2d.h"
 #include "Surface.h"
+#include "../headers/ActorListener.h"
+#include <iostream>
+
+
 
 class World {
 
 private:
-    sf::Sprite worldSprite;
     sf::Sprite ballSprite;
 
+    std::unordered_map<LevelItem, sf::Sprite> mapSprites;
     std::unordered_map<LevelItem, Surface> mapItems;
+
+    int numberLives;
 
     Ball ball;
     Level level;
+    bool flagBallForDelete = false;
 
     unsigned int widthWindow;
     unsigned int heightWindow;
@@ -31,18 +38,23 @@ private:
     const int addedEdges = 6;
     const float sizeOfBlockInMeters = 1.25;
 
-    float coef;
-    const float gravityOnY = 150.8f;
+    float coefForDisplay;
+    float OXDamping = 0.99f;
+    const float gravityOnY = 25.0f;
     const float jumpSizeByBlock = 4.5f;
+    const float maxSpeedOX = 10;
 
-
+    b2ContactListener* contactListener;
 
     b2World physicalWorld = b2World(b2Vec2(0.0f, this->gravityOnY));
     //b2World physicalWorld = b2World(b2Vec2(0.0f, 0));
     b2Body* ballBody;
     b2CircleShape dynamicBallShape;
 
-    void createSurface();
+    void createSurfaces();
+    void createSprites();
+    void touchingEnemy();
+    void createBall();
 
 public:
     World(Level level, unsigned int width, unsigned int height);

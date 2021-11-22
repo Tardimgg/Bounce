@@ -9,6 +9,7 @@
 #include <string>
 #include <SFML/System/Vector2.hpp>
 #include <unordered_map>
+#include "../include/box2d/b2_math.h"
 
 enum LevelItem{
     BRICK      = 1 << 0,
@@ -18,8 +19,15 @@ enum LevelItem{
     AIR        = 1 << 4,
     WATER      = 1 << 5,
     BALL       = 1 << 6,
-    BIG_BALL   = 1 << 7
+    BIG_BALL   = 1 << 7,
+    RING       = 1 << 8
 };
+
+enum TypeFigure{
+    ENEMY    = 1 << 0,
+    NO_ENEMY = 1 << 1
+};
+
 
 class Level {
 
@@ -40,6 +48,10 @@ public:
     LevelItem** getData();
 
     std::string getImagePathByItemType(LevelItem item);
+
+    b2Vec2 getStartPosition();
+
+    int getNumberLives();
 
 };
 

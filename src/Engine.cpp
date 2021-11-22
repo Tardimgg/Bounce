@@ -52,6 +52,7 @@ void Engine::start() {
         }
 
         sf::Time elapsedTime = clock.restart();
+        //std::cout << 1 / elapsedTime.asSeconds() << std::endl;
 
         input();
         update(elapsedTime.asMicroseconds());
