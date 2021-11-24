@@ -11,19 +11,23 @@
 #include "Ball.h"
 #include "Level.h"
 #include "../include/box2d/box2d.h"
-#include "Surface.h"
+#include "surfaces/Surface.h"
 #include "../headers/ActorListener.h"
 #include <iostream>
 
-
+#define sizeOfBlockInMeters 1.25f
+#define visibleHeightByBlock 10
+#define addedEdges 6
+#define OXDamping 0.99f
+#define gravityOnY 25.0f
+#define jumpSizeByBlock 4.5f
+#define maxSpeedOX 10
 
 class World {
 
 private:
-    sf::Sprite ballSprite;
 
-    std::unordered_map<LevelItem, sf::Sprite> mapSprites;
-    std::unordered_map<LevelItem, Surface> mapItems;
+    std::unordered_map<LevelItem, Surface*> mapItems;
 
     int numberLives;
 
@@ -34,24 +38,14 @@ private:
     unsigned int widthWindow;
     unsigned int heightWindow;
 
-    const unsigned int visibleHeightByBlock = 10;
-    const int addedEdges = 6;
-    const float sizeOfBlockInMeters = 1.25;
-
     float coefForDisplay;
-    float OXDamping = 0.99f;
-    const float gravityOnY = 25.0f;
-    const float jumpSizeByBlock = 4.5f;
-    const float maxSpeedOX = 10;
 
     b2ContactListener* contactListener;
 
-    b2World physicalWorld = b2World(b2Vec2(0.0f, this->gravityOnY));
+    b2World physicalWorld = b2World(b2Vec2(0.0f, gravityOnY));
     //b2World physicalWorld = b2World(b2Vec2(0.0f, 0));
     b2Body* ballBody;
-    b2CircleShape dynamicBallShape;
 
-    void createSurfaces();
     void createSprites();
     void touchingEnemy();
     void createBall();

@@ -7,10 +7,10 @@
 
 
 #include <unordered_map>
-#include "Environment.h"
-#include "../include/box2d/b2_math.h"
-#include "../include/box2d/b2_fixture.h"
-#include "../include/box2d/box2d.h"
+#include "../Environment.h"
+#include "../../include/box2d/b2_math.h"
+#include "../../include/box2d/b2_fixture.h"
+#include "../../include/box2d/box2d.h"
 
 
 class Surface : public Environment{
@@ -27,13 +27,18 @@ public:
     explicit Surface(const std::string &path);
 
     void addPoint(float x, float y);
+    void addPoint(b2Vec2 vec);
+
     void addTopPoint(float x, float y);
+    void addTopPoint(b2Vec2 vec);
+
+    void clearPoints();
 
     std::vector<b2Vec2> getPoints();
     std::vector<b2Vec2> getTopPoints();
 
-    b2Fixture* buildOnEngine(b2World& world, float x, float y);
-    std::pair<b2Fixture*, b2Fixture*> buildOnEngineWithTop(b2World& world, float x, float y);
+    virtual b2Fixture* buildOnEngineWithoutTop(b2World& world, float x, float y);
+    std::pair<b2Fixture*, b2Fixture*> buildOnEngine(b2World& world, float x, float y);
 
 
 };

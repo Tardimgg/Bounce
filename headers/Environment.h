@@ -13,12 +13,17 @@ class Environment {
 private:
     sf::Image image;
     sf::Texture texture;
+    sf::Sprite sprite;
 
 public:
 
     explicit Environment(const std::string& path);
 
     sf::Texture& getTexture();
+
+    virtual void buildSprite(float scaleCoefOX, float scaleCoefOY);
+
+    sf::Sprite* getSprite();
 
 };
 

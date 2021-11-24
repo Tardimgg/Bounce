@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 14)
 
 find_package(SFML 2.5 COMPONENTS graphics audio REQUIRED)
 
-add_executable(Bounce src/main.cpp src/World.cpp headers/World.h src/Ball.cpp headers/Ball.h src/Player.cpp headers/Player.h src/Environment.cpp headers/Environment.h src/Spike.cpp headers/Spike.h src/View.cpp headers/View.h src/FlyingView.cpp headers/FlyingView.h src/Engine.cpp headers/Engine.h src/Level.cpp headers/Level.h lib/tinyxml2.cpp include/tinyxml2/tinyxml2.h src/Surface.cpp headers/Surface.h src/ActorListener.cpp headers/ActorListener.h)
+add_executable(Bounce src/main.cpp src/World.cpp headers/World.h src/Ball.cpp headers/Ball.h src/surfaces/Block.cpp headers/surfaces/Block.h src/Environment.cpp headers/Environment.h src/surfaces/Spike.cpp headers/surfaces/Spike.h src/FlyingView.cpp headers/FlyingView.h src/Engine.cpp headers/Engine.h src/Level.cpp headers/Level.h lib/tinyxml2.cpp include/tinyxml2/tinyxml2.h src/surfaces/Surface.cpp headers/surfaces/Surface.h src/ActorListener.cpp headers/ActorListener.h src/surfaces/HalfBlock.cpp headers/surfaces/HalfBlock.h src/surfaces/Ring.cpp headers/surfaces/Ring.h)
 
 
 target_link_libraries(Bounce sfml-graphics sfml-audio)

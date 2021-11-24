@@ -6,16 +6,19 @@
 #define BOUNCE_BALL_H
 
 
-#include "View.h"
+#include "FlyingView.h"
+#include "../include/box2d/b2_fixture.h"
+#include "../include/box2d/box2d.h"
 
-class Ball : public View {
 
-private:
-
+class Ball : public FlyingView {
 
 public:
 
     explicit Ball(const std::string& path);
+
+    std::pair<b2Body*, b2Fixture*> buildOnEngine(b2World& world, float radius, float x, float y);
+
 
 };
 

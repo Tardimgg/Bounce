@@ -6,9 +6,24 @@
 #define BOUNCE_FLYINGVIEW_H
 
 
-#include "View.h"
+#include "Environment.h"
 
-class FlyingView : View {
+class FlyingView : public Environment {
+
+private:
+    sf::Vector2f position;
+
+public:
+
+    explicit FlyingView(const std::string &path);
+
+    void setPosition(sf::Vector2f position);
+
+    sf::Vector2f getPosition();
+
+    void setPosition(float width, float height);
+
+    void buildSprite(float scaleCoefOX, float scaleCoefOY) override;
 
 };
 

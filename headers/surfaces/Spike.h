@@ -6,9 +6,13 @@
 #define BOUNCE_SPIKE_H
 
 
-#include "View.h"
+#include "Surface.h"
 
-class Spike : View {
+class Spike : public Surface {
+
+public:
+
+    Spike(const std::string &path, float size);
 
 };
 

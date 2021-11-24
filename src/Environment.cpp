@@ -13,3 +13,17 @@ Environment::Environment(const std::string& path) {
 sf::Texture& Environment::getTexture() {
     return this->texture;
 }
+
+void Environment::buildSprite(float scaleCoefOX, float scaleCoefOY) {
+    sf::Vector2u size = this->texture.getSize();
+
+    sf::Vector2f scaleCoef(scaleCoefOX, scaleCoefOY);
+
+    this->sprite.setTexture(this->getTexture());
+    this->sprite.setScale(scaleCoef);
+    this->sprite.setTextureRect(sf::IntRect(0, 0, (int) size.x / 2, (int) size.y));
+}
+
+sf::Sprite* Environment::getSprite(){
+    return &sprite;
+}
