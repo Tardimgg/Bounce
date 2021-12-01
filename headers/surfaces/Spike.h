@@ -14,6 +14,11 @@ public:
 
     Spike(const std::string &path, float size);
 
+    b2Fixture* buildOnEngineWithoutTop(b2World& world, float x, float y) override;
+    std::pair<b2Fixture*, b2Fixture*> buildOnEngine(b2World& world, float x, float y) override;
+
+
+
 };
 
 

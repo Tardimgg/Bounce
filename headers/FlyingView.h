@@ -7,6 +7,8 @@
 
 
 #include "Environment.h"
+#include "../include/box2d/b2_fixture.h"
+#include "../include/box2d/box2d.h"
 
 class FlyingView : public Environment {
 

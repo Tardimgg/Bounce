@@ -7,18 +7,26 @@
 
 #include <SFML/Graphics.hpp>
 #include "World.h"
+#include <stack>
+#include <filesystem>
 
 class Engine {
 
 private:
 
+    sf::Vector2u resolution;
+
     sf::RenderWindow window;
     World* world;
-    sf::Vector2f positionCamera{0, 0};
+    std::stack<Level> levels;
+    sf::Vector2f positionMainObjectInLocalView{0, 0};
     bool mainObjectInNormalXPosition = false;
     bool mainObjectInNormalYPosition = false;
 
     sf::View* viewWindow;
+
+    float OXVisibleCoef = 5.0 / 14;
+    float OYVisibleCoef = 513.0f / 2048;
 
     void input();
     void update(long long elapsedTime);

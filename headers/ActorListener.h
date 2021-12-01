@@ -14,11 +14,20 @@
 class ActorListener : public b2ContactListener {
 
 private:
-    TypeFigure valueForCallback;
-    std::function<void()> callback;
+    std::function<void()> callbackForTouchingEnemy;
+    std::function<void(sf::Vector2i)> callbackToGiveRing;
+    std::function<void()> callbackToCompleteLevel;
+    std::function<void()> callbackForTouchingToLowerItem;
+    std::function<void()> callbackForTouchingToUpperItem;
+
+    bool checkRingContact(b2Contact* contact);
 
 public :
-    ActorListener(TypeFigure valueForCallback, std::function<void()> callback);
+    ActorListener(std::function<void()> callbackForTouchingEnemy,
+                  std::function<void()> callbackForTouchingToLowerItem,
+		          std::function<void()> callbackForTouchingToUpperItem,
+                  std::function<void(sf::Vector2i)> callbackToGiveBonus,
+                  std::function<void()> callbackToCompleteLevel);
 
     void BeginContact(b2Contact* contact) override;
     void EndContact(b2Contact* contact) override;

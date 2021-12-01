@@ -3,6 +3,7 @@
 //
 
 #include "../headers/Ball.h"
+#include "../headers/Level.h"
 
 Ball::Ball(const std::string &path) : FlyingView(path) {
     this->getTexture().setSmooth(true);
@@ -22,5 +23,8 @@ std::pair<b2Body *, b2Fixture *> Ball::buildOnEngine(b2World &world, float radiu
     fixtureDef.shape = &dynamicBallShape;
     fixtureDef.density = 1300.0f;
 
-    return {ballBody, ballBody->CreateFixture(&fixtureDef)};
+    b2Fixture* fixture = ballBody->CreateFixture(&fixtureDef);
+    fixture->GetUserData().pointer = BALL_TYPE;
+
+    return {ballBody, fixture};
 }

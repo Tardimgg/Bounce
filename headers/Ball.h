@@ -7,8 +7,7 @@
 
 
 #include "FlyingView.h"
-#include "../include/box2d/b2_fixture.h"
-#include "../include/box2d/box2d.h"
+
 
 
 class Ball : public FlyingView {

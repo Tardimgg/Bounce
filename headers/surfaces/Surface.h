@@ -38,7 +38,7 @@ public:
     std::vector<b2Vec2> getTopPoints();
 
     virtual b2Fixture* buildOnEngineWithoutTop(b2World& world, float x, float y);
-    std::pair<b2Fixture*, b2Fixture*> buildOnEngine(b2World& world, float x, float y);
+    virtual std::pair<b2Fixture*, b2Fixture*> buildOnEngine(b2World& world, float x, float y);
 
 
 };

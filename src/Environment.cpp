@@ -21,7 +21,7 @@ void Environment::buildSprite(float scaleCoefOX, float scaleCoefOY) {
 
     this->sprite.setTexture(this->getTexture());
     this->sprite.setScale(scaleCoef);
-    this->sprite.setTextureRect(sf::IntRect(0, 0, (int) size.x / 2, (int) size.y));
+    this->sprite.setTextureRect(sf::IntRect(0, 0, (int) size.x, (int) size.y));
 }
 
 sf::Sprite* Environment::getSprite(){
