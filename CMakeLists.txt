@@ -12,6 +12,3 @@ add_subdirectory(lib/box2d-2.4.1)
 target_link_libraries(Bounce box2d)
 
 target_link_libraries(Bounce sfml-graphics sfml-audio)
-
-
-

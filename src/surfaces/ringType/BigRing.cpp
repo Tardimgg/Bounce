@@ -3,7 +3,7 @@
 //
 
 #include "../../../headers/surfaces/ringType/BigRing.h"
-#include "../../../headers/Level.h"
+
 
 BigRing::BigRing(const std::string &path, float size) : RingType(path) {
     float halfBlockSize = size / 2;

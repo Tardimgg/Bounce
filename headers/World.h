@@ -14,6 +14,22 @@
 #include "surfaces/Surface.h"
 #include "../headers/ActorListener.h"
 #include "Spider.h"
+
+#include "../headers/surfaces/blockType/Block.h"
+#include "../headers/surfaces/blockType/LeftHalfBlock.h"
+#include "../headers/surfaces/Spike.h"
+#include "../headers/surfaces/ringType/Ring.h"
+#include "../headers/surfaces/ringType/RotatedRing.h"
+#include "../headers/surfaces/EndLevel.h"
+#include "../headers/surfaces/blockType/RightHalfBlock.h"
+#include "../headers/surfaces/Diminutive.h"
+#include "../headers/surfaces/Magnifier.h"
+#include "../headers/surfaces/ringType/BigRing.h"
+#include "../headers/surfaces/ringType/RotatedBigRing.h"
+#include "../headers/surfaces/JumpBlock.h"
+#include "../headers/surfaces/blockType/TopLeftHalfBlock.h"
+#include "../headers/surfaces/blockType/TopRightHalfBlock.h"
+
 #include <iostream>
 
 #define sizeOfBlockInMeters 1.25f
@@ -76,6 +92,7 @@ public:
     void drawTexture(sf::RenderWindow& worldWindows);
 
     bool isFinish();
+    bool isWin();
 
 };
 

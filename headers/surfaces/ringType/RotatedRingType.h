@@ -19,9 +19,9 @@ public:
 
     RotatedRingType(const std::string &path);
 
-    void selectFirstHalfToDisplay();
-    void selectSecondHalfToDisplay();
-    void selectAllRingToDisplay();
+    void selectFirstHalfToDisplay() override;
+    void selectSecondHalfToDisplay() override;
+    void selectAllRingToDisplay() override;
 
 };
 

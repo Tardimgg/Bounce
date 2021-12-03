@@ -11,6 +11,8 @@
 #include <unordered_map>
 #include "../include/box2d/b2_math.h"
 #include <sstream>
+#include "../include/tinyxml2/tinyxml2.h"
+#include <iostream>
 
 
 enum LevelItem : unsigned int {

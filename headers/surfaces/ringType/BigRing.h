@@ -6,6 +6,7 @@
 #define BOUNCE_BIGRING_H
 
 #include "RingType.h"
+#include "../../../headers/Level.h"
 
 class BigRing : public RingType{
 

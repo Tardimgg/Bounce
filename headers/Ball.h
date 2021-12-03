@@ -7,7 +7,7 @@
 
 
 #include "FlyingView.h"
-
+#include "../headers/Level.h"
 
 
 class Ball : public FlyingView {

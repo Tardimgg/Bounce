@@ -7,7 +7,6 @@
 
 EndLevel::EndLevel(const std::string &path, float size) : Surface(path) {
     float halfBlockSize = size / 2;
-    //float widthEndLevel = halfBlockSize * (1.0f / 3);
     float widthEndLevel = 1;
 
 

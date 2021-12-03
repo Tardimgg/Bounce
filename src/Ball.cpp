@@ -3,7 +3,6 @@
 //
 
 #include "../headers/Ball.h"
-#include "../headers/Level.h"
 
 Ball::Ball(const std::string &path) : FlyingView(path) {
     this->getTexture().setSmooth(true);

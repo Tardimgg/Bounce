@@ -3,21 +3,6 @@
 //
 
 #include "../headers/World.h"
-#include "../headers/surfaces/blockType/Block.h"
-#include "../headers/surfaces/blockType/LeftHalfBlock.h"
-#include "../headers/surfaces/Spike.h"
-#include "../headers/surfaces/ringType/Ring.h"
-#include "../headers/surfaces/ringType/RotatedRing.h"
-#include "../headers/surfaces/EndLevel.h"
-#include "../headers/surfaces/blockType/RightHalfBlock.h"
-#include "../headers/surfaces/Diminutive.h"
-#include "../headers/surfaces/Magnifier.h"
-#include "../headers/surfaces/ringType/BigRing.h"
-#include "../headers/surfaces/ringType/RotatedBigRing.h"
-#include "../headers/Spider.h"
-#include "../headers/surfaces/JumpBlock.h"
-#include "../headers/surfaces/blockType/TopLeftHalfBlock.h"
-#include "../headers/surfaces/blockType/TopRightHalfBlock.h"
 
 
 World::World(Level level, unsigned int width, unsigned int height) :
@@ -197,6 +182,11 @@ bool World::isFinish() {
     return this->finish;
 }
 
+bool World::isWin() {
+    return this->finish && this->numberLives != 0;
+}
+
+
 void World::createBall(float radius) {
 
     b2Vec2 startPosition = this->level.getStartPosition();
@@ -273,7 +263,6 @@ void World::input(sf::Keyboard::Key addPowerVector) {
                                                                         * 600000 * (this->ballIsSmall ? 1 : 1.4f), 0),
                                                                     false);
             }
-            //this->ballBody->ApplyLinearImpulseToCenter(b2Vec2(400.0f, 0), false);
 
             break;
         case sf::Keyboard::Up : {
@@ -288,7 +277,6 @@ void World::input(sf::Keyboard::Key addPowerVector) {
                             currentSpeed.x,
                             -std::sqrt(2 * gravityOnY * jumpSizeByBlock * sizeOfBlockInMeters * (this->ballIsSmall ? 1 : 1.4f))
                         });
-                        //this->ballBody->ApplyLinearImpulseToCenter(b2Vec2(0, -60000.0f), false);
                         break;
                     }
                 }
@@ -298,7 +286,6 @@ void World::input(sf::Keyboard::Key addPowerVector) {
         case sf::Keyboard::Down :
             this->ballBody->SetLinearVelocity({this->ballBody->GetLinearVelocity().x,
                                                15.0f * sizeOfBlockInMeters});
-            //this->ballBody->ApplyLinearImpulseToCenter(b2Vec2(0, 100.0f), false);
             break;
 
     }
@@ -326,7 +313,7 @@ sf::Vector2f World::update(long long elapsedTime) {
     if (this->flagBallForDelete && !this->physicalWorld.IsLocked()) {
         --this->numberLives;
         if (numberLives == 0) {
-            exit(0);
+            this->finish = true;
         }
         this->physicalWorld.DestroyBody(this->ballBody);
         this->flagBallForDelete = false;
@@ -429,6 +416,7 @@ void World::drawTexture(sf::RenderWindow &worldWindows) {
     worldWindows.draw(*this->ball.getSprite());
 
 
+
     ((RingType*) this->mapItems.find(RING)->second)->selectFirstHalfToDisplay();
     ((RingType*) this->mapItems.find(VISITED_RING)->second)->selectFirstHalfToDisplay();
     ((RotatedRingType*) this->mapItems.find(ROTATED_RING)->second)->selectSecondHalfToDisplay();
@@ -437,6 +425,7 @@ void World::drawTexture(sf::RenderWindow &worldWindows) {
     ((RingType*) this->mapItems.find(VISITED_BIG_RING)->second)->selectFirstHalfToDisplay();
     ((RotatedRingType*) this->mapItems.find(ROTATED_BIG_RING)->second)->selectSecondHalfToDisplay();
     ((RotatedRingType*) this->mapItems.find(VISITED_ROTATED_BIG_RING)->second)->selectSecondHalfToDisplay();
+
 
     for (std::pair<int, int>& value : this->arrangementOfRing) {
         LevelItem item = this->level.getData()[value.first][value.second];
@@ -448,4 +437,5 @@ void World::drawTexture(sf::RenderWindow &worldWindows) {
 
         worldWindows.draw(*sprite);
     }
+
 }

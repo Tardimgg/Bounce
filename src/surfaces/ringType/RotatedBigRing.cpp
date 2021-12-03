@@ -4,12 +4,6 @@
 
 #include "../../../headers/surfaces/ringType/RotatedBigRing.h"
 
-//
-// Created by oop on 26.11.2021.
-//
-
-#include "../../../headers/surfaces/ringType/RotatedRing.h"
-#include "../../../headers/Level.h"
 
 RotatedBigRing::RotatedBigRing(const std::string &path, float size) : RotatedRingType(path) {
     float halfBlockSize = size / 2;

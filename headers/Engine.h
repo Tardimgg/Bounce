@@ -14,6 +14,17 @@ class Engine {
 
 private:
 
+    sf::Image imageWin;
+    sf::Texture textureWin;
+    sf::Sprite spriteWin;
+
+    sf::Image imageLose;
+    sf::Texture textureLose;
+    sf::Sprite spriteLose;
+
+    bool gameIsOver = false;
+    bool isWin = false;
+
     sf::Vector2u resolution;
 
     sf::RenderWindow window;

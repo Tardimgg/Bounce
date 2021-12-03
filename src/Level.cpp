@@ -3,8 +3,7 @@
 //
 
 #include "../headers/Level.h"
-#include "../include/tinyxml2/tinyxml2.h"
-#include <iostream>
+
 
 
 Level::Level(const std::string& path) {

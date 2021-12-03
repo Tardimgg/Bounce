@@ -8,11 +8,11 @@
 
 
 Engine::Engine() {
-    this->resolution.x = (sf::VideoMode::getDesktopMode().width >> 2) * 3;
-    this->resolution.y = (sf::VideoMode::getDesktopMode().height >> 2) * 3;
+    this->resolution.x = (sf::VideoMode::getDesktopMode().width >> 0) * 1;
+    this->resolution.y = (sf::VideoMode::getDesktopMode().height >> 0) * 1;
 
     this->window.create(sf::VideoMode(this->resolution.x, this->resolution.y), "Bounce",
-                        sf::Style::Resize | sf::Style::Close);
+                        sf::Style::Fullscreen | sf::Style::Close);
 
     this->viewWindow = new sf::View(sf::FloatRect(0.f, 0.f,
                                                   static_cast<float>(this->resolution.x),
@@ -38,6 +38,23 @@ Engine::Engine() {
                                         (float) this->resolution.y / 2
                                 )
     );
+
+
+    this->imageWin.loadFromFile("../data/winLogo.png");
+    this->textureWin.loadFromImage(this->imageWin);
+    sf::Vector2u size = this->textureWin.getSize();
+
+    this->spriteWin.setTexture(this->textureWin);
+    this->spriteWin.setScale((float) this->resolution.x / (float) size.x, (float) this->resolution.y / (float) size.y);
+    this->spriteWin.setTextureRect(sf::IntRect(0, 0, (int) size.x, (int) size.y));
+
+    this->imageLose.loadFromFile("../data/loseLogo.png");
+    this->textureLose.loadFromImage(this->imageLose);
+    size = this->textureLose.getSize();
+
+    this->spriteLose.setTexture(this->textureLose);
+    this->spriteLose.setScale((float) this->resolution.x / (float) size.x, (float) this->resolution.y / (float) size.y);
+    this->spriteLose.setTextureRect(sf::IntRect(0, 0, (int) size.x, (int) size.y));
 }
 
 void Engine::start() {
@@ -53,48 +70,58 @@ void Engine::start() {
                 window.close();
             }
             if (event.type == sf::Event::Resized) {
-                // resize my view
                 viewWindow->setSize({
                     static_cast<float>(event.size.width),
                     static_cast<float>(event.size.height)
                 });
                 window.setView(*viewWindow);
-                // and align shape
 
             }
         }
 
-        if (!this->world->isFinish()) {
-            sf::Time elapsedTime = clock.restart();
-            //std::cout << 1 / elapsedTime.asSeconds() << std::endl;
+        if (!gameIsOver) {
+            if (!this->world->isFinish()) {
+                sf::Time elapsedTime = clock.restart();
+                //std::cout << 1 / elapsedTime.asSeconds() << std::endl;
 
-            input();
-            update(elapsedTime.asMicroseconds());
-            draw();
-        } else {
-            delete this->world;
+                input();
+                update(elapsedTime.asMicroseconds());
+            } else if (this->world->isWin()) {
 
-            mainObjectInNormalXPosition = false;
-            mainObjectInNormalYPosition = false;
+                delete this->world;
 
-            if (!this->levels.empty()) {
-                this->world = new World(this->levels.top(), this->resolution.x, this->resolution.y);
-                this->levels.pop();
+                mainObjectInNormalXPosition = false;
+                mainObjectInNormalYPosition = false;
 
-                sf::Vector2f startMainObjectPosition = this->world->getMainObjectPosition();
-                this->positionMainObjectInLocalView.x = std::min(startMainObjectPosition.x, (float) this->resolution.x / 2);
-                this->positionMainObjectInLocalView.y = std::min(startMainObjectPosition.y, (float) this->resolution.y * (1.0f - this->OYVisibleCoef));
+                if (!this->levels.empty()) {
+                    this->world = new World(this->levels.top(), this->resolution.x, this->resolution.y);
+                    this->levels.pop();
 
-                this->viewWindow->setCenter(std::max(startMainObjectPosition.x, (float) this->resolution.x / 2),
-                                            std::max(
-                                                    startMainObjectPosition.y - (1.0f - this->OYVisibleCoef) * (float) this->resolution.y + (float) this->resolution.y / 2,
-                                                    (float) this->resolution.y / 2
-                                                    )
-                                                    );
+                    sf::Vector2f startMainObjectPosition = this->world->getMainObjectPosition();
+                    this->positionMainObjectInLocalView.x = std::min(startMainObjectPosition.x, (float) this->resolution.x / 2);
+                    this->positionMainObjectInLocalView.y = std::min(startMainObjectPosition.y, (float) this->resolution.y * (1.0f - this->OYVisibleCoef));
+
+                    this->viewWindow->setCenter(std::max(startMainObjectPosition.x, (float) this->resolution.x / 2),
+                                                std::max(
+                                                        startMainObjectPosition.y - (1.0f - this->OYVisibleCoef) * (float) this->resolution.y + (float) this->resolution.y / 2,
+                                                        (float) this->resolution.y / 2
+                                                        )
+                                                        );
+                } else {
+                    this->viewWindow->setCenter((float) this->resolution.x / 2, (float) this->resolution.y / 2);
+                    this->gameIsOver = true;
+                    this->isWin = true;
+                }
             } else {
-                return;
+                delete this->world;
+
+                this->viewWindow->setCenter((float) this->resolution.x / 2, (float) this->resolution.y / 2);
+                this->isWin = false;
+                this->gameIsOver = true;
             }
+
         }
+        draw();
     }
 }
 
@@ -114,14 +141,13 @@ void Engine::input() {
 }
 
 void Engine::update(long long elapsedTime) {
-    //float oXCoef = (float) 5 / 14;
-    //float oYCoef = (float) 124 / 704;
-    //float oYCoef = 1.0f / 8;
 
-    if (this->positionMainObjectInLocalView.x >= ((float) this->window.getSize().x * this->OXVisibleCoef) && this->positionMainObjectInLocalView.x <= ((float) this->window.getSize().x * (1 - this->OXVisibleCoef))) {
+    if (this->positionMainObjectInLocalView.x >= ((float) this->window.getSize().x * this->OXVisibleCoef) &&
+        this->positionMainObjectInLocalView.x <= ((float) this->window.getSize().x * (1 - this->OXVisibleCoef))) {
         this->mainObjectInNormalXPosition = true;
     }
-    if (this->positionMainObjectInLocalView.y >= ((float) this->window.getSize().y * this->OYVisibleCoef) && this->positionMainObjectInLocalView.y <= ((float) this->window.getSize().y * (1 - this->OYVisibleCoef))) {
+    if (this->positionMainObjectInLocalView.y >= ((float) this->window.getSize().y * this->OYVisibleCoef) &&
+        this->positionMainObjectInLocalView.y <= ((float) this->window.getSize().y * (1 - this->OYVisibleCoef))) {
         this->mainObjectInNormalYPosition = true;
     }
 
@@ -133,7 +159,8 @@ void Engine::update(long long elapsedTime) {
     if (!this->mainObjectInNormalXPosition) {
         this->positionMainObjectInLocalView.x += delta.x;
     } else {
-        if (delta.x + this->positionMainObjectInLocalView.x <= ((float) this->window.getSize().x * this->OXVisibleCoef) || delta.x + this->positionMainObjectInLocalView.x >= ((float) this->window.getSize().x * (1 - this->OXVisibleCoef))) {
+        if (delta.x + this->positionMainObjectInLocalView.x <= ((float) this->window.getSize().x * this->OXVisibleCoef) ||
+            delta.x + this->positionMainObjectInLocalView.x >= ((float) this->window.getSize().x * (1 - this->OXVisibleCoef))) {
             moveX = delta.x;
         } else {
             this->positionMainObjectInLocalView.x += delta.x;
@@ -143,7 +170,8 @@ void Engine::update(long long elapsedTime) {
     if (!this->mainObjectInNormalYPosition) {
         this->positionMainObjectInLocalView.y += delta.y;
     } else {
-        if (delta.y + this->positionMainObjectInLocalView.y <= ((float) this->window.getSize().y * this->OYVisibleCoef) || delta.y + this->positionMainObjectInLocalView.y >= ((float) this->window.getSize().y * (1 - this->OYVisibleCoef))) {
+        if (delta.y + this->positionMainObjectInLocalView.y <= ((float) this->window.getSize().y * this->OYVisibleCoef) ||
+            delta.y + this->positionMainObjectInLocalView.y >= ((float) this->window.getSize().y * (1 - this->OYVisibleCoef))) {
             moveY = delta.y;
         } else {
             this->positionMainObjectInLocalView.y += delta.y;
@@ -151,8 +179,6 @@ void Engine::update(long long elapsedTime) {
     }
 
     this->viewWindow->move(moveX, moveY);
-    //this->viewWindow->move(moveX, delta.y);
-    //this->viewWindow->move(moveX, 0);
 }
 
 void Engine::draw() {
@@ -160,13 +186,10 @@ void Engine::draw() {
     this->window.clear(sf::Color(86, 218, 254));
     this->window.setView(*this->viewWindow);
 
-    //sf::RenderTexture worldTexture;
-    //worldTexture.create(this->resolution.x, this->resolution.y);
-    //worldTexture.clear(sf::Color::Blue);
-    //this->world.drawTexture(this->window, this->resolution.x, this->resolution.y);
-    this->world->drawTexture(this->window);
-
-    //sf::Sprite sprite(worldTexture.getTexture());
-    //this->window.draw(sprite);
+    if (this->gameIsOver) {
+        this->window.draw(this->isWin ? this->spriteWin : this->spriteLose);
+    } else {
+        this->world->drawTexture(this->window);
+    }
     this->window.display();
 }

@@ -6,6 +6,8 @@
 #define BOUNCE_ROTATEDBIGRING_H
 
 #include "RotatedRingType.h"
+#include "../../../headers/surfaces/ringType/RotatedRing.h"
+
 
 class RotatedBigRing : public RotatedRingType{
 

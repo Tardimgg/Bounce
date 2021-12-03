@@ -11,16 +11,12 @@ RotatedRing::RotatedRing(const std::string &path, float size) : RotatedRingType(
     float coef = (2.0f / 100);
 
     this->leftRing.emplace_back(-halfBlockSize, -widthRing);
-    //this->leftRing.emplace_back(-halfBlockSize * coef, -widthRing);
-    //this->leftRing.emplace_back(-halfBlockSize + coef, widthRing);
     this->leftRing.emplace_back(-halfBlockSize * coef, 0);
     this->leftRing.emplace_back(-halfBlockSize, widthRing);
 
-    //this->rightRing.emplace_back(size + halfBlockSize * coef, -widthRing);
     this->rightRing.emplace_back(size + halfBlockSize, -widthRing);
     this->rightRing.emplace_back(size + halfBlockSize, widthRing);
     this->rightRing.emplace_back(size + halfBlockSize * coef, 0);
-    //this->rightRing.emplace_back(size + halfBlockSize * coef, widthRing);
 
     for (int i = 0; i < this->leftRing.size(); ++i) {
         Surface::addPoint(this->leftRing[i]);
