@@ -88,8 +88,8 @@ std::unordered_map<std::string, LevelItem> Level::idItems = {
     	{"18", OX_SPIDER},
     	{"19", OY_SPIDER},
     	{"20", JUMP_BRICK},
-    	{"21", TOP_LEFT_HALF_BLOCK},
-    	{"22", TOP_RIGHT_HALF_BLOCK}
+    	{"21", TOP_LEFT_HALF_BRICK},
+    	{"22", TOP_RIGHT_HALF_BRICK}
 };
 
 int Level::getWidth() {

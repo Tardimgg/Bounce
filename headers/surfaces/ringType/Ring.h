@@ -12,11 +12,6 @@
 
 class Ring : public RingType{
 
-private:
-
-    std::vector<b2Vec2> upperRing;
-    std::vector<b2Vec2> lowerRing;
-
 public:
 
     Ring(const std::string &path, float size);

@@ -12,11 +12,6 @@
 
 class RotatedRing : public RotatedRingType{
 
-private:
-
-    std::vector<b2Vec2> leftRing;
-    std::vector<b2Vec2> rightRing;
-
 public:
 
     RotatedRing(const std::string &path, float size);

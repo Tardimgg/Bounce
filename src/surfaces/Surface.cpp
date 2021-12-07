@@ -15,7 +15,7 @@ std::unordered_map<int, std::vector<b2Vec2>> Surface::globalPoints;
 std::unordered_map<int, std::vector<b2Vec2>> Surface::globalTopPoints;
 
 void Surface::addPoint(float x, float y) {
-    Surface::globalPoints[this->localIndex].push_back(b2Vec2(x, y));
+    Surface::globalPoints[this->localIndex].emplace_back(x, y);
 }
 
 void Surface::addPoint(b2Vec2 vec) {
@@ -23,7 +23,7 @@ void Surface::addPoint(b2Vec2 vec) {
 }
 
 void Surface::addTopPoint(float x, float y) {
-    Surface::globalTopPoints[this->localIndex].push_back(b2Vec2(x, y));
+    Surface::globalTopPoints[this->localIndex].emplace_back(x, y);
 }
 
 void Surface::addTopPoint(b2Vec2 vec) {

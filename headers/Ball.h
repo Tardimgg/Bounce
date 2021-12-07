@@ -12,13 +12,18 @@
 
 class Ball : public FlyingView {
 
+private:
+    bool ballIsSmall = true;
+
 public:
 
     explicit Ball(const std::string& path);
 
     std::pair<b2Body*, b2Fixture*> buildOnEngine(b2World& world, float radius, float x, float y);
 
-
+    bool isSmall();
+    void setSmallSize(bool smallSize);
+    
 };
 
 

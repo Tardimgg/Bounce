@@ -6,32 +6,32 @@
 
 
 World::World(Level level, unsigned int width, unsigned int height) :
-                          level(level), widthWindow(width),
-                          heightWindow(height),
-                          ball(level.getImagePathByItemType(BALL)),
-                          numberLives(level.getNumberLives()),
-                          numberUnvisitedRings(level.getNumberRings()),
-                          mapItems({
-                              {BRICK,                   new Block(level.getImagePathByItemType(BRICK), sizeOfBlockInMeters)},
-                              {LEFT_HALF_BRICK,         new LeftHalfBlock(level.getImagePathByItemType(LEFT_HALF_BRICK), sizeOfBlockInMeters)},
-                              {RIGHT_HALF_BRICK,        new RightHalfBlock(level.getImagePathByItemType(RIGHT_HALF_BRICK), sizeOfBlockInMeters)},
-                              {SPIKE,                   new Spike(level.getImagePathByItemType(SPIKE), sizeOfBlockInMeters)},
-                              {RING,                    new Ring(level.getImagePathByItemType(RING), sizeOfBlockInMeters)},
-                              {VISITED_RING,            new Ring(level.getImagePathByItemType(VISITED_RING), sizeOfBlockInMeters)},
-                              {ROTATED_RING,            new RotatedRing(level.getImagePathByItemType(ROTATED_RING), sizeOfBlockInMeters)},
-                              {VISITED_ROTATED_RING,    new RotatedRing(level.getImagePathByItemType(VISITED_ROTATED_RING), sizeOfBlockInMeters)},
-                              {BIG_RING,                new BigRing(level.getImagePathByItemType(BIG_RING), sizeOfBlockInMeters)},
-                              {VISITED_BIG_RING,        new BigRing(level.getImagePathByItemType(VISITED_BIG_RING), sizeOfBlockInMeters)},
-                              {ROTATED_BIG_RING,        new RotatedBigRing(level.getImagePathByItemType(ROTATED_BIG_RING), sizeOfBlockInMeters)},
-                              {VISITED_ROTATED_BIG_RING,new RotatedBigRing(level.getImagePathByItemType(VISITED_ROTATED_BIG_RING), sizeOfBlockInMeters)},
-                              {CLOSE_END_LEVEL,         new EndLevel(level.getImagePathByItemType(CLOSE_END_LEVEL), sizeOfBlockInMeters)},
-                              {END_LEVEL,               new EndLevel(level.getImagePathByItemType(END_LEVEL), sizeOfBlockInMeters)},
-                              {TO_LOWER_ITEM,           new Diminutive(level.getImagePathByItemType(TO_LOWER_ITEM), sizeOfBlockInMeters)},
-                              {TO_UPPER_ITEM,           new Magnifier(level.getImagePathByItemType(TO_UPPER_ITEM), sizeOfBlockInMeters)},
-                              {JUMP_BRICK,              new JumpBlock(level.getImagePathByItemType(JUMP_BRICK), sizeOfBlockInMeters)},
-                              {TOP_LEFT_HALF_BLOCK,     new TopLeftHalfBlock(level.getImagePathByItemType(TOP_LEFT_HALF_BLOCK), sizeOfBlockInMeters)},
-                              {TOP_RIGHT_HALF_BLOCK,    new TopRightHalfBlock(level.getImagePathByItemType(TOP_RIGHT_HALF_BLOCK), sizeOfBlockInMeters)}
-                          }){
+             level(level), widthWindow(width),
+             heightWindow(height),
+             ball(level.getImagePathByItemType(BALL)),
+             numberLives(level.getNumberLives()),
+             numberUnvisitedRings(level.getNumberRings()),
+             mapItems({
+                 {BRICK,                   new Block(level.getImagePathByItemType(BRICK), sizeOfBlockInMeters)},
+                 {LEFT_HALF_BRICK,         new LeftHalfBlock(level.getImagePathByItemType(LEFT_HALF_BRICK), sizeOfBlockInMeters)},
+                 {RIGHT_HALF_BRICK,        new RightHalfBlock(level.getImagePathByItemType(RIGHT_HALF_BRICK), sizeOfBlockInMeters)},
+                 {SPIKE,                   new Spike(level.getImagePathByItemType(SPIKE), sizeOfBlockInMeters)},
+                 {RING,                    new Ring(level.getImagePathByItemType(RING), sizeOfBlockInMeters)},
+                 {VISITED_RING,            new Ring(level.getImagePathByItemType(VISITED_RING), sizeOfBlockInMeters)},
+                 {ROTATED_RING,            new RotatedRing(level.getImagePathByItemType(ROTATED_RING), sizeOfBlockInMeters)},
+                 {VISITED_ROTATED_RING,    new RotatedRing(level.getImagePathByItemType(VISITED_ROTATED_RING), sizeOfBlockInMeters)},
+                 {BIG_RING,                new BigRing(level.getImagePathByItemType(BIG_RING), sizeOfBlockInMeters)},
+                 {VISITED_BIG_RING,        new BigRing(level.getImagePathByItemType(VISITED_BIG_RING), sizeOfBlockInMeters)},
+                 {ROTATED_BIG_RING,        new RotatedBigRing(level.getImagePathByItemType(ROTATED_BIG_RING), sizeOfBlockInMeters)},
+                 {VISITED_ROTATED_BIG_RING,new RotatedBigRing(level.getImagePathByItemType(VISITED_ROTATED_BIG_RING), sizeOfBlockInMeters)},
+                 {CLOSE_END_LEVEL,         new EndLevel(level.getImagePathByItemType(CLOSE_END_LEVEL), sizeOfBlockInMeters)},
+                 {END_LEVEL,               new EndLevel(level.getImagePathByItemType(END_LEVEL), sizeOfBlockInMeters)},
+                 {TO_LOWER_ITEM,           new Diminutive(level.getImagePathByItemType(TO_LOWER_ITEM), sizeOfBlockInMeters)},
+                 {TO_UPPER_ITEM,           new Magnifier(level.getImagePathByItemType(TO_UPPER_ITEM), sizeOfBlockInMeters)},
+                 {JUMP_BRICK,              new JumpBlock(level.getImagePathByItemType(JUMP_BRICK), sizeOfBlockInMeters)},
+                 {TOP_LEFT_HALF_BRICK,     new TopLeftHalfBlock(level.getImagePathByItemType(TOP_LEFT_HALF_BRICK), sizeOfBlockInMeters)},
+                 {TOP_RIGHT_HALF_BRICK,    new TopRightHalfBlock(level.getImagePathByItemType(TOP_RIGHT_HALF_BRICK), sizeOfBlockInMeters)}
+             }){
 
 
     Spider::initView(level.getImagePathByItemType(OX_SPIDER));
@@ -52,16 +52,17 @@ World::World(Level level, unsigned int width, unsigned int height) :
             if (!(item & (AIR | BALL | OX_SPIDER | OY_SPIDER))) {
 
                 if (i == 0 || !(this->level.getData()[i - 1][j] & (BRICK | LEFT_HALF_BRICK | RIGHT_HALF_BRICK |
-                    JUMP_BRICK | TOP_LEFT_HALF_BLOCK | TOP_RIGHT_HALF_BLOCK)) ||
-                    this->level.getData()[i][j] & (RING | BIG_RING)) {
+                                                                   JUMP_BRICK | TOP_LEFT_HALF_BRICK | TOP_RIGHT_HALF_BRICK)) ||
+                                this->level.getData()[i][j] & (RING | ROTATED_RING | BIG_RING | ROTATED_BIG_RING)) {
 
                     std::pair<b2Fixture*, b2Fixture*> fixturePair = this->mapItems.find(item)->second->buildOnEngine(
                             this->physicalWorld,
                             sizeOfBlockInMeters * (float) j + sizeOfBlockInMeters / 2,
-                            sizeOfBlockInMeters * (float) i + sizeOfBlockInMeters / 2);
+                            sizeOfBlockInMeters * (float) i + sizeOfBlockInMeters / 2
+                    );
 
                     if (item & (RING | ROTATED_RING | BIG_RING | ROTATED_BIG_RING)) {
-                        fixturePair.first->GetBody()->GetUserData().pointer = reinterpret_cast<uintptr_t>(
+                        fixturePair.second->GetBody()->GetUserData().pointer = reinterpret_cast<uintptr_t>(
                                 new sf::Vector2i(i, j)
                         );
                     }
@@ -78,7 +79,6 @@ World::World(Level level, unsigned int width, unsigned int height) :
                 b2Vec2 movement;
                 sf::Vector2i step;
 
-
                 if (item & OX_SPIDER) {
                     if (this->level.getData()[i][j + 2] == AIR) {
                         step = sf::Vector2i(1, 0);
@@ -88,8 +88,8 @@ World::World(Level level, unsigned int width, unsigned int height) :
                         movement = b2Vec2(-1, 0);
                     }
                     findIndex = findBorder(BRICK | LEFT_HALF_BRICK | RIGHT_HALF_BRICK | JUMP_BRICK |
-                                                            TOP_LEFT_HALF_BLOCK | TOP_RIGHT_HALF_BLOCK, {j, i},
-                                                        {step.x > 0 ? widthLevel : 0, i}, step);
+                                           TOP_LEFT_HALF_BRICK | TOP_RIGHT_HALF_BRICK, {j, i},
+                                           {step.x > 0 ? widthLevel : 0, i}, step);
                     findIndex.x += step.x > 0 ? -2 : 1;
                 } else {
                     if (this->level.getData()[i + 2][j] == AIR) {
@@ -100,7 +100,7 @@ World::World(Level level, unsigned int width, unsigned int height) :
                         movement = b2Vec2(0, -1);
                     }
                     findIndex = findBorder(BRICK | LEFT_HALF_BRICK | RIGHT_HALF_BRICK |
-                                            JUMP_BRICK | TOP_LEFT_HALF_BLOCK | TOP_RIGHT_HALF_BLOCK,
+                                           JUMP_BRICK | TOP_LEFT_HALF_BRICK | TOP_RIGHT_HALF_BRICK,
                                             {j, i},
                                            {j, step.y > 0 ? heightLevel : 0}, step);
                     findIndex.y += step.y > 0 ? -2 : 1;
@@ -118,11 +118,9 @@ World::World(Level level, unsigned int width, unsigned int height) :
                             movement,
                             sizeOfBlockInMeters
                             );
-                b2Body* spiderBody = spider.buildOnEngine(
-                        this->physicalWorld,
-                        sizeOfBlockInMeters * (float) j + sizeOfBlockInMeters,
-                        sizeOfBlockInMeters * (float) i + sizeOfBlockInMeters
-                        ).first;
+
+                b2Body* spiderBody = spider.buildOnEngine(this->physicalWorld).first;
+
                 this->spiders.emplace_back(spider, spiderBody);
 
             }
@@ -138,7 +136,6 @@ World::World(Level level, unsigned int width, unsigned int height) :
 
 sf::Vector2i World::findBorder(unsigned int border, sf::Vector2i start, sf::Vector2i end, sf::Vector2i step) {
     while (start.x != end.x || start.y != end.y) {
-        LevelItem w = this->level.getData()[start.y][start.x];
         if (this->level.getData()[start.y][start.x] & border) {
             return start;
         }
@@ -241,18 +238,18 @@ sf::Vector2f World::getMainObjectPosition() {
 }
 
 
-void World::input(sf::Keyboard::Key addPowerVector) {
-    this->ballBody->SetAwake(true);
+void World::input(sf::Keyboard::Key keyVector) {
+    //this->ballBody->SetAwake(true);
     b2Vec2 currentSpeed = this->ballBody->GetLinearVelocity();
 
-    switch (addPowerVector) {
+    switch (keyVector) {
         case sf::Keyboard::Left :
             if (currentSpeed.x <= -maxSpeedOX) {
                 this->ballBody->SetLinearVelocity({-maxSpeedOX, currentSpeed.y});
             } else {
                 this->ballBody->ApplyForceToCenter(b2Vec2(-std::pow(sizeOfBlockInMeters / 2, 3.0f)
-                                                                        * 600000 * (this->ballIsSmall ? 1 : 1.4f), 0),
-                                                                    false);
+                                                        * 600000 * (this->ball.isSmall() ? 1 : 1.4f), 0),
+                                                                    true);
             }
             break;
         case sf::Keyboard::Right :
@@ -260,8 +257,8 @@ void World::input(sf::Keyboard::Key addPowerVector) {
                 this->ballBody->SetLinearVelocity({maxSpeedOX, currentSpeed.y});
             } else {
                 this->ballBody->ApplyForceToCenter(b2Vec2(std::pow(sizeOfBlockInMeters / 2, 3.0f)
-                                                                        * 600000 * (this->ballIsSmall ? 1 : 1.4f), 0),
-                                                                    false);
+                                                        * 600000 * (this->ball.isSmall() ? 1 : 1.4f), 0),
+                                                                    true);
             }
 
             break;
@@ -275,7 +272,8 @@ void World::input(sf::Keyboard::Key addPowerVector) {
                     if (normal.y <= -0.5) {
                         this->ballBody->SetLinearVelocity({
                             currentSpeed.x,
-                            -std::sqrt(2 * gravityOnY * jumpSizeByBlock * sizeOfBlockInMeters * (this->ballIsSmall ? 1 : 1.4f))
+                            -std::sqrt(2 * gravityOnY * jumpSizeByBlock * sizeOfBlockInMeters *
+                                                                        (this->ball.isSmall() ? 1 : 1.4f))
                         });
                         break;
                     }
@@ -319,13 +317,13 @@ sf::Vector2f World::update(long long elapsedTime) {
         this->flagBallForDelete = false;
         this->createBall();
 
-        if (!this->ballIsSmall) {
+        if (!this->ball.isSmall()) {
             this->ball.getSprite()->scale(1.0f / 1.3f, 1.0f / 1.3f);
-            this->ballIsSmall = true;
+            this->ball.setSmallSize(true);
         }
     }
 
-    if ((this->flagBallToLower && !this->ballIsSmall || this->flagBallToUpper && this->ballIsSmall)
+    if ((this->flagBallToLower && !this->ball.isSmall() || this->flagBallToUpper && this->ball.isSmall())
         && !this->physicalWorld.IsLocked()) {
 
         this->physicalWorld.DestroyBody(this->ballBody);
@@ -334,13 +332,13 @@ sf::Vector2f World::update(long long elapsedTime) {
                          this->flagBallToLower ?
                          sizeOfBlockInMeters / 2.0f - sizeOfBlockInMeters / 100.0f :
                          sizeOfBlockInMeters / 2.0f * 1.3f);
-        if (this->ballIsSmall) {
+        if (this->ball.isSmall()) {
             this->ball.getSprite()->scale(1.3f, 1.3f);
         } else {
             this->ball.getSprite()->scale(1.0f / 1.3f, 1.0f / 1.3f);
         }
 
-        this->ballIsSmall = flagBallToLower;
+        this->ball.setSmallSize(flagBallToLower);
 
     }
     this->flagBallToLower = false;

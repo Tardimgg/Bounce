@@ -27,3 +27,11 @@ std::pair<b2Body *, b2Fixture *> Ball::buildOnEngine(b2World &world, float radiu
 
     return {ballBody, fixture};
 }
+
+bool Ball::isSmall() {
+    return this->ballIsSmall;
+}
+
+void Ball::setSmallSize(bool smallSize) {
+    this->ballIsSmall = smallSize;
+}

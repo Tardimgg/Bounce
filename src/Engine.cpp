@@ -34,7 +34,8 @@ Engine::Engine() {
 
     this->viewWindow->setCenter(std::max(startMainObjectPosition.x, (float) this->resolution.x / 2),
                                 std::max(
-                                        startMainObjectPosition.y - (1.0f - this->OYVisibleCoef) * (float) this->resolution.y + (float) this->resolution.y / 2,
+                                        startMainObjectPosition.y - (1.0f - this->OYVisibleCoef) * (float) this->resolution.y
+                                        + (float) this->resolution.y / 2,
                                         (float) this->resolution.y / 2
                                 )
     );
@@ -80,46 +81,12 @@ void Engine::start() {
         }
 
         if (!gameIsOver) {
-            if (!this->world->isFinish()) {
+            if (updateWorldStatus()) {
                 sf::Time elapsedTime = clock.restart();
-                //std::cout << 1 / elapsedTime.asSeconds() << std::endl;
 
                 input();
                 update(elapsedTime.asMicroseconds());
-            } else if (this->world->isWin()) {
-
-                delete this->world;
-
-                mainObjectInNormalXPosition = false;
-                mainObjectInNormalYPosition = false;
-
-                if (!this->levels.empty()) {
-                    this->world = new World(this->levels.top(), this->resolution.x, this->resolution.y);
-                    this->levels.pop();
-
-                    sf::Vector2f startMainObjectPosition = this->world->getMainObjectPosition();
-                    this->positionMainObjectInLocalView.x = std::min(startMainObjectPosition.x, (float) this->resolution.x / 2);
-                    this->positionMainObjectInLocalView.y = std::min(startMainObjectPosition.y, (float) this->resolution.y * (1.0f - this->OYVisibleCoef));
-
-                    this->viewWindow->setCenter(std::max(startMainObjectPosition.x, (float) this->resolution.x / 2),
-                                                std::max(
-                                                        startMainObjectPosition.y - (1.0f - this->OYVisibleCoef) * (float) this->resolution.y + (float) this->resolution.y / 2,
-                                                        (float) this->resolution.y / 2
-                                                        )
-                                                        );
-                } else {
-                    this->viewWindow->setCenter((float) this->resolution.x / 2, (float) this->resolution.y / 2);
-                    this->gameIsOver = true;
-                    this->isWin = true;
-                }
-            } else {
-                delete this->world;
-
-                this->viewWindow->setCenter((float) this->resolution.x / 2, (float) this->resolution.y / 2);
-                this->isWin = false;
-                this->gameIsOver = true;
             }
-
         }
         draw();
     }
@@ -179,6 +146,46 @@ void Engine::update(long long elapsedTime) {
     }
 
     this->viewWindow->move(moveX, moveY);
+}
+
+bool Engine::updateWorldStatus() {
+    if (!this->world->isFinish()) {
+        return true;
+    } else if (this->world->isWin()) {
+
+        delete this->world;
+
+        mainObjectInNormalXPosition = false;
+        mainObjectInNormalYPosition = false;
+
+        if (!this->levels.empty()) {
+            this->world = new World(this->levels.top(), this->resolution.x, this->resolution.y);
+            this->levels.pop();
+
+            sf::Vector2f startMainObjectPosition = this->world->getMainObjectPosition();
+            this->positionMainObjectInLocalView.x = std::min(startMainObjectPosition.x, (float) this->resolution.x / 2);
+            this->positionMainObjectInLocalView.y = std::min(startMainObjectPosition.y, (float) this->resolution.y * (1.0f - this->OYVisibleCoef));
+
+            this->viewWindow->setCenter(std::max(startMainObjectPosition.x, (float) this->resolution.x / 2),
+                                        std::max(
+                                                startMainObjectPosition.y - (1.0f - this->OYVisibleCoef) * (float) this->resolution.y
+                                                + (float) this->resolution.y / 2,
+                                                (float) this->resolution.y / 2
+                                        )
+            );
+        } else {
+            this->viewWindow->setCenter((float) this->resolution.x / 2, (float) this->resolution.y / 2);
+            this->gameIsOver = true;
+            this->isWin = true;
+        }
+    } else {
+        delete this->world;
+
+        this->viewWindow->setCenter((float) this->resolution.x / 2, (float) this->resolution.y / 2);
+        this->isWin = false;
+        this->gameIsOver = true;
+    }
+    return false;
 }
 
 void Engine::draw() {

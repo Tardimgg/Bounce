@@ -10,14 +10,9 @@
 
 class RotatedRingType : public RingType{
 
-private:
-
-    std::vector<b2Vec2> upperRing;
-    std::vector<b2Vec2> lowerRing;
-
 public:
 
-    RotatedRingType(const std::string &path);
+    explicit RotatedRingType(const std::string &path);
 
     void selectFirstHalfToDisplay() override;
     void selectSecondHalfToDisplay() override;

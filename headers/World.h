@@ -59,7 +59,6 @@ private:
     bool flagBallForDelete = false;
     bool flagBallToLower = false;
     bool flagBallToUpper = false;
-    bool ballIsSmall = true;
 
     unsigned int widthWindow;
     unsigned int heightWindow;
@@ -76,7 +75,7 @@ private:
     void touchingEnemy();
     void touchingToLower();
     void touchingToUpper();
-    void touchingBonus(sf::Vector2i);
+    void touchingBonus(sf::Vector2i coord);
     void finishLevel();
     void createBall(float radius = sizeOfBlockInMeters / 2.0f - sizeOfBlockInMeters / 100.0f);
     void createBall(b2Vec2 position, float radius = sizeOfBlockInMeters / 2.0f - sizeOfBlockInMeters / 100.0f);
@@ -88,7 +87,7 @@ public:
     sf::Vector2f getMainObjectPosition();
 
     sf::Vector2f update(long long elapsedTime);
-    void input(sf::Keyboard::Key addPowerVector);
+    void input(sf::Keyboard::Key keyVector);
     void drawTexture(sf::RenderWindow& worldWindows);
 
     bool isFinish();

@@ -25,6 +25,7 @@ public:
 
     Spider(b2Vec2 startPosition, b2Vec2 stopPosition, b2Vec2 moving, float side);
 
+    std::pair<b2Body *, b2Fixture *> buildOnEngine(b2World& world);
     std::pair<b2Body *, b2Fixture *> buildOnEngine(b2World& world, float x, float y);
 
     b2Vec2 getMoving();

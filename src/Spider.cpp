@@ -16,11 +16,16 @@ Spider::Spider( b2Vec2 startPosition, b2Vec2 stopPosition, b2Vec2 moving, float 
 
 }
 
+std::pair<b2Body *, b2Fixture *> Spider::buildOnEngine(b2World &world) {
+    return this->buildOnEngine(world, this->startPosition.x, this->startPosition.y);
+}
+
+
 std::pair<b2Body *, b2Fixture *> Spider::buildOnEngine(b2World &world, float x, float y) {
-    b2BodyDef SpiderBodyDef;
-    SpiderBodyDef.type = b2_dynamicBody;
-    SpiderBodyDef.position.Set(x, y);
-    b2Body *spiderBody = world.CreateBody(&SpiderBodyDef);
+    b2BodyDef spiderBodyDef;
+    spiderBodyDef.type = b2_dynamicBody;
+    spiderBodyDef.position.Set(x, y);
+    b2Body *spiderBody = world.CreateBody(&spiderBodyDef);
 
     b2PolygonShape groundBox;
     groundBox.Set(&this->points[0], (int32) this->points.size());
@@ -31,30 +36,6 @@ std::pair<b2Body *, b2Fixture *> Spider::buildOnEngine(b2World &world, float x, 
 
     return {spiderBody, fixture};
 }
-
-//b2Vec2 Spider::getPosition(long long int timeElapsed) {
-//    if (this->movement.y == 0) {
-//        timeElapsed %= (long long) (std::abs(this->stopPosition.x - this->startPosition.x) * 2 / this->movement.x);
-//        if (this->stopPosition.x + (float) timeElapsed * this->movement.x > this->stopPosition.x) {
-//            timeElapsed -= (long) ((this->stopPosition.x - this->currentPosition.x) / this->movement.x);
-//            this->currentPosition = this->stopPosition;
-//            this->movingToEnd = false;
-//        }
-//
-//        this->currentPosition.x += (this->movingToEnd ? 1.0f : -1.0f) * (this->movement.x) * (float) timeElapsed;
-//    }
-//
-//    if (this->movement.x == 0) {
-//        timeElapsed %= (long long) (std::abs(this->stopPosition.y - this->startPosition.y) * 2 / this->movement.y);
-//        if (this->stopPosition.y + (float) timeElapsed * this->movement.y > this->stopPosition.y) {
-//            timeElapsed -= (long) ((this->stopPosition.y - this->currentPosition.y) / this->movement.y);
-//            this->currentPosition = this->stopPosition;
-//            this->movingToEnd = false;
-//        }
-//
-//        this->currentPosition.y += (this->movingToEnd ? 1.0f : -1.0f) * (this->movement.y) * (float) timeElapsed;
-//    }
-//}
 
 FlyingView* Spider::getView() {
     return Spider::view;

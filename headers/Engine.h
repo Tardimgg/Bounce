@@ -41,6 +41,7 @@ private:
 
     void input();
     void update(long long elapsedTime);
+    bool updateWorldStatus();
     void draw();
 
 public:

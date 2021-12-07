@@ -11,39 +11,24 @@ RotatedBigRing::RotatedBigRing(const std::string &path, float size) : RotatedRin
 
     float coef = (2.0f / 500);
 
-    this->leftRing.emplace_back(-halfBlockSize, -widthRing);
-    this->leftRing.emplace_back(-halfBlockSize * coef, 0);
-    this->leftRing.emplace_back(-halfBlockSize, widthRing);
+    this->addFirstPoint(-halfBlockSize, -widthRing);
+    this->addFirstPoint(-halfBlockSize * coef, 0);
+    this->addFirstPoint(-halfBlockSize, widthRing);
 
-    this->rightRing.emplace_back(size + halfBlockSize, -widthRing);
-    this->rightRing.emplace_back(size + halfBlockSize, widthRing);
-    this->rightRing.emplace_back(size + halfBlockSize * coef, 0);
-
-    for (int i = 0; i < this->leftRing.size(); ++i) {
-        Surface::addPoint(this->leftRing[i]);
-    }
+    this->addSecondPoint(size + halfBlockSize, -widthRing);
+    this->addSecondPoint(size + halfBlockSize, widthRing);
+    this->addSecondPoint(size + halfBlockSize * coef, 0);
 }
 
 b2Fixture *RotatedBigRing::buildOnEngineWithoutTop(b2World &world, float x, float y) {
-    b2Fixture* topFixture = Surface::buildOnEngineWithoutTop(world, x, y);
-    topFixture->GetUserData().pointer = ROTATED_BIG_RING_TYPE;
+    return buildOnEngine(world, x, y).first;
 
-    Surface::clearPoints();
-    for (int i = 0; i < this->rightRing.size(); ++i) {
-        Surface::addPoint(this->rightRing[i]);
-    }
-
-    b2Fixture* lowerFixture = Surface::buildOnEngineWithoutTop(world, x, y);
-    lowerFixture->GetUserData().pointer = ROTATED_BIG_RING_TYPE;
-
-    Surface::clearPoints();
-    for (int i = 0; i < this->leftRing.size(); ++i) {
-        Surface::addPoint(this->leftRing[i]);
-    }
-
-    return lowerFixture;
 }
 
 std::pair<b2Fixture *, b2Fixture *> RotatedBigRing::buildOnEngine(b2World &world, float x, float y) {
-    return {RotatedBigRing::buildOnEngineWithoutTop(world, x, y), nullptr};
+    std::pair<b2Fixture*, b2Fixture*> fixture = RingType::buildOnEngine(world, x, y);
+    fixture.first->GetUserData().pointer = ROTATED_BIG_RING_TYPE;
+    fixture.second->GetUserData().pointer = ROTATED_BIG_RING_TYPE;
+
+    return {fixture.first, fixture.second};
 }

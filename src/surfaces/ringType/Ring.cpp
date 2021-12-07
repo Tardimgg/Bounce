@@ -10,39 +10,24 @@ Ring::Ring(const std::string &path, float size) : RingType(path) {
 
     float coef = (1.0f / 800);
 
-    this->upperRing.emplace_back(-widthRing, -halfBlockSize);
-    this->upperRing.emplace_back(widthRing, -halfBlockSize);
-    this->upperRing.emplace_back(0, -halfBlockSize * coef);
+    this->addFirstPoint(-widthRing, -halfBlockSize);
+    this->addFirstPoint(widthRing, -halfBlockSize);
+    this->addFirstPoint(0, -halfBlockSize * coef);
 
-    this->lowerRing.emplace_back(0, size + halfBlockSize * coef);
-    this->lowerRing.emplace_back(widthRing, size + halfBlockSize);
-    this->lowerRing.emplace_back(-widthRing, size + halfBlockSize);
+    this->addSecondPoint(0, size + halfBlockSize * coef);
+    this->addSecondPoint(widthRing, size + halfBlockSize);
+    this->addSecondPoint(-widthRing, size + halfBlockSize);
 
-    for (int i = 0; i < this->upperRing.size(); ++i) {
-        Surface::addPoint(this->upperRing[i]);
-    }
 }
 
 b2Fixture *Ring::buildOnEngineWithoutTop(b2World &world, float x, float y) {
-    b2Fixture* topFixture = Surface::buildOnEngineWithoutTop(world, x, y);
-    topFixture->GetUserData().pointer = ORDINARY_RING_TYPE;
-
-    Surface::clearPoints();
-    for (int i = 0; i < this->lowerRing.size(); ++i) {
-        Surface::addPoint(this->lowerRing[i]);
-    }
-
-    b2Fixture* lowerFixture = Surface::buildOnEngineWithoutTop(world, x, y);
-    lowerFixture->GetUserData().pointer = ORDINARY_RING_TYPE;
-
-    Surface::clearPoints();
-    for (int i = 0; i < this->upperRing.size(); ++i) {
-        Surface::addPoint(this->upperRing[i]);
-    }
-
-    return lowerFixture;
+    return buildOnEngine(world, x, y).first;
 }
 
 std::pair<b2Fixture *, b2Fixture *> Ring::buildOnEngine(b2World &world, float x, float y) {
-    return {Ring::buildOnEngineWithoutTop(world, x, y), nullptr};
+    std::pair<b2Fixture*, b2Fixture*> fixture = RingType::buildOnEngine(world, x, y);
+    fixture.first->GetUserData().pointer = ORDINARY_RING_TYPE;
+    fixture.second->GetUserData().pointer = ORDINARY_RING_TYPE;
+
+    return {fixture.first, fixture.second};
 }

@@ -9,7 +9,7 @@
 #include "../../Level.h"
 
 
-class BlockType : public Surface{
+class BlockType : public Surface {
 
 public:
 

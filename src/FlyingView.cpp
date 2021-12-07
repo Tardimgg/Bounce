@@ -24,6 +24,6 @@ void FlyingView::setPosition(sf::Vector2f newPosition) {
 void FlyingView::buildSprite(float scaleCoefOX, float scaleCoefOY) {
     Environment::buildSprite(scaleCoefOX, scaleCoefOY);
 
-    sf::Vector2u ballSize = Environment::getTexture().getSize();
-    Environment::getSprite()->setOrigin((float) ballSize.x / 2, (float) ballSize.y / 2);
+    sf::Vector2u size = Environment::getTexture().getSize();
+    Environment::getSprite()->setOrigin((float) size.x / 2, (float) size.y / 2);
 }
